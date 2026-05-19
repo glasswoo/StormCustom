@@ -20,18 +20,18 @@ const zoneLabels = {
 };
 
 const palette = [
-  { name: "珍珠白", color: "#f8f7f2" },
-  { name: "霧黑", color: "#231f20" },
-  { name: "冷灰", color: "#aeb2b3" },
-  { name: "Storm 紅", color: "#c7302b" },
-  { name: "海松綠", color: "#0f766e" },
-  { name: "鈷藍", color: "#1d4ed8" },
-  { name: "螢光黃", color: "#d6ff2f" },
-  { name: "競速橘", color: "#f97316" },
-  { name: "紫羅蘭", color: "#7c3aed" },
-  { name: "沙棕皮", color: "#b4875f" },
-  { name: "碳纖黑", color: "#343434" },
-  { name: "金屬金", color: "#c58c31" },
+  { code: "01", name: "深紅色", color: "#c7302b" },
+  { code: "02", name: "珍珠白", color: "#f8f7f2" },
+  { code: "03", name: "霧黑色", color: "#231f20" },
+  { code: "04", name: "冷灰色", color: "#aeb2b3" },
+  { code: "05", name: "海松綠", color: "#0f766e" },
+  { code: "06", name: "鈷藍色", color: "#1d4ed8" },
+  { code: "07", name: "螢光黃", color: "#d6ff2f" },
+  { code: "08", name: "競速橘", color: "#f97316" },
+  { code: "09", name: "紫羅蘭", color: "#7c3aed" },
+  { code: "10", name: "沙棕色", color: "#b4875f" },
+  { code: "11", name: "碳纖黑", color: "#343434" },
+  { code: "12", name: "金屬金", color: "#c58c31" },
 ];
 
 const state = {
@@ -50,18 +50,18 @@ const state = {
   },
   zones: {
     A: {
-      code: "A-01",
-      name: "珍珠白皮",
+      code: "02",
+      name: "珍珠白",
       color: "#f8f7f2",
     },
     B: {
-      code: "B-01",
-      name: "珍珠白皮",
+      code: "02",
+      name: "珍珠白",
       color: "#f8f7f2",
     },
     C: {
-      code: "C-08",
-      name: "冷灰皮",
+      code: "04",
+      name: "冷灰色",
       color: "#aeb2b3",
     },
   },
@@ -106,7 +106,7 @@ function applyInitialUrlOverrides() {
   ["A", "B", "C"].forEach((zone) => {
     const color = readUrlColor(params.get(zone.toLowerCase()) || params.get(zone));
     if (color) {
-      state.zones[zone].color = color;
+      setZoneColor(zone, color);
     }
   });
 }
@@ -122,8 +122,7 @@ function readUrlColor(value) {
 function cacheElements() {
   els.zoneTabs = document.getElementById("zoneTabs");
   els.zoneHint = document.getElementById("zoneHint");
-  els.materialCode = document.getElementById("materialCode");
-  els.materialName = document.getElementById("materialName");
+  els.materialDisplayText = document.getElementById("materialDisplayText");
   els.swatchGrid = document.getElementById("swatchGrid");
   els.render2dPreview = document.getElementById("render2dPreview");
   els.sheetPreview = document.getElementById("sheetPreview");
@@ -164,17 +163,6 @@ function bindActions() {
       }
       setModelButtonState();
     });
-  });
-
-  els.materialCode.addEventListener("input", () => {
-    state.zones[state.activeZone].code = els.materialCode.value;
-    renderZoneTabs();
-    renderSheet();
-  });
-
-  els.materialName.addEventListener("input", () => {
-    state.zones[state.activeZone].name = els.materialName.value;
-    renderSheet();
   });
 
   els.exportPngButton.addEventListener("click", exportPng);
@@ -236,9 +224,11 @@ function renderSwatches() {
           class="swatch-button"
           style="--swatch:${item.color}"
           data-swatch="${item.color}"
+          data-swatch-code="${item.code}"
           data-swatch-name="${escapeHtml(item.name)}"
-          title="${escapeHtml(item.name)}"
-          aria-label="${escapeHtml(item.name)}"
+          title="${escapeHtml(materialLabel(item))}"
+          aria-label="${escapeHtml(materialLabel(item))}"
+          aria-pressed="false"
           type="button"
         ></button>
       `,
@@ -247,9 +237,11 @@ function renderSwatches() {
 
   els.swatchGrid.querySelectorAll("[data-swatch]").forEach((button) => {
     button.addEventListener("click", () => {
-      const zone = state.activeZone;
-      state.zones[zone].color = button.dataset.swatch;
-      state.zones[zone].name = `${button.dataset.swatchName}皮`;
+      applyPaletteItemToZone(state.activeZone, {
+        code: button.dataset.swatchCode,
+        name: button.dataset.swatchName,
+        color: button.dataset.swatch,
+      });
       syncControlsFromState();
       updateThreeMaterials();
       renderZoneTabs();
@@ -260,8 +252,43 @@ function renderSwatches() {
 
 function syncControlsFromState() {
   const zone = state.zones[state.activeZone];
-  els.materialCode.value = zone.code;
-  els.materialName.value = zone.name;
+  els.materialDisplayText.textContent = materialLabel(zone);
+  updateSwatchSelection();
+}
+
+function setZoneColor(zone, color) {
+  const item = paletteItemForColor(color);
+  if (item) {
+    applyPaletteItemToZone(zone, item);
+    return;
+  }
+  state.zones[zone].code = "--";
+  state.zones[zone].name = "自訂色";
+  state.zones[zone].color = color;
+}
+
+function applyPaletteItemToZone(zone, item) {
+  state.zones[zone].code = item.code;
+  state.zones[zone].name = item.name;
+  state.zones[zone].color = item.color;
+}
+
+function paletteItemForColor(color) {
+  const normalized = normalizeColor(color);
+  return palette.find((item) => normalizeColor(item.color) === normalized);
+}
+
+function materialLabel(data) {
+  return `${data.code}/${data.name}`;
+}
+
+function updateSwatchSelection() {
+  const selectedColor = normalizeColor(state.zones[state.activeZone].color);
+  els.swatchGrid.querySelectorAll("[data-swatch]").forEach((button) => {
+    const isSelected = normalizeColor(button.dataset.swatch) === selectedColor;
+    button.classList.toggle("is-selected", isSelected);
+    button.setAttribute("aria-pressed", isSelected ? "true" : "false");
+  });
 }
 
 function initThree() {

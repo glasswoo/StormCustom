@@ -62,11 +62,10 @@
           </div>
 
           <div class="panel-block">
-            <label class="field-label" for="materialCode">料號</label>
-            <input id="materialCode" class="text-input" type="text" autocomplete="off" />
-
-            <label class="field-label" for="materialName">皮色 / 材質名稱</label>
-            <input id="materialName" class="text-input" type="text" autocomplete="off" />
+            <div class="material-display" aria-live="polite">
+              <span>目前選用</span>
+              <strong id="materialDisplayText">02/珍珠白</strong>
+            </div>
 
             <label class="field-label">可選顏色</label>
             <div class="swatch-grid" id="swatchGrid" aria-label="常用色票"></div>
