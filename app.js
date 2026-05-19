@@ -1129,7 +1129,6 @@ function sheetColorUnderlays() {
   return `
     <g id="color-underlays">
       ${boot}
-      ${tableColorUnderlays()}
     </g>
   `;
 }
@@ -1190,22 +1189,6 @@ function slalomSheetUnderlays() {
       <path d="M904 895 C1050 930 1162 970 1222 1012 C1202 1090 1146 1128 1052 1138 C1028 1035 982 956 904 895 Z" fill="${bootZoneFill("B")}"/>
     </g>
   `;
-}
-
-function tableColorUnderlays() {
-  const zones = activeZones();
-  const table = state.model === "speed"
-    ? { x: 1248, y: 716, row: 190, colorX: 1652, colorW: 258 }
-    : { x: 1170, y: 726, row: 200, colorX: 1596, colorW: 315 };
-
-  return zones
-    .map((zone, index) => {
-      const rowY = table.y + index * table.row;
-      return `
-        <rect x="${table.colorX}" y="${rowY}" width="${table.colorW}" height="${table.row}" fill="${bootZoneFill(zone)}"/>
-      `;
-    })
-    .join("");
 }
 
 function sheetValueOverlays() {
@@ -1379,15 +1362,13 @@ function materialTableSvg(zones) {
     .map((zone, index) => {
       const data = state.zones[zone];
       const rowY = y + index * rowHeight;
-      const fill = zoneFill(zone);
       return `
         <rect x="${x}" y="${rowY}" width="${labelWidth}" height="${rowHeight}" fill="#fffdf9" stroke="#241715" stroke-width="3"/>
         <rect x="${x + labelWidth}" y="${rowY}" width="${codeWidth}" height="${rowHeight}" fill="#fffdf9" stroke="#241715" stroke-width="3"/>
         <rect x="${x + labelWidth + codeWidth}" y="${rowY}" width="${width - labelWidth - codeWidth}" height="${rowHeight}" fill="#fffdf9" stroke="#241715" stroke-width="3"/>
         <text x="${x + 42}" y="${rowY + rowHeight / 2 + 32}" font-size="88" font-weight="900" fill="#241715">${zone}</text>
         <text x="${x + labelWidth + 34}" y="${rowY + rowHeight / 2 + 12}" font-size="44" font-weight="900" fill="#241715">${escapeXml(fitText(data.code, 11))}</text>
-        <rect x="${x + labelWidth + codeWidth + 32}" y="${rowY + 42}" width="96" height="${rowHeight - 84}" rx="8" fill="${fill}" stroke="#241715" stroke-width="3"/>
-        <text x="${x + labelWidth + codeWidth + 152}" y="${rowY + rowHeight / 2 + 12}" font-size="36" font-weight="850" fill="#241715">${escapeXml(fitText(data.name, 8))}</text>
+        <text x="${x + labelWidth + codeWidth + 34}" y="${rowY + rowHeight / 2 + 12}" font-size="36" font-weight="850" fill="#241715">${escapeXml(fitText(data.name, 8))}</text>
       `;
     })
     .join("");
