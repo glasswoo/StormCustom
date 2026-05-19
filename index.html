@@ -68,32 +68,8 @@
             <label class="field-label" for="materialName">皮色 / 材質名稱</label>
             <input id="materialName" class="text-input" type="text" autocomplete="off" />
 
-            <label class="field-label" for="zoneColor">基礎色塊</label>
-            <div class="color-row">
-              <input id="zoneColor" class="color-input" type="color" />
-              <div class="swatch-grid" id="swatchGrid" aria-label="常用色票"></div>
-            </div>
-          </div>
-
-          <div class="panel-block">
-            <div class="block-title">
-              <h2>皮質掃描</h2>
-              <span>上傳皮革照片後會套用到目前分區</span>
-            </div>
-            <div class="texture-control">
-              <label class="upload-box" for="textureUpload">
-                <i data-lucide="scan-line"></i>
-                <span>上傳皮革圖</span>
-                <input id="textureUpload" type="file" accept="image/*" />
-              </label>
-              <button class="plain-button" id="clearTextureButton" type="button">
-                <i data-lucide="eraser"></i>
-                清除貼圖
-              </button>
-            </div>
-            <div class="texture-preview" id="texturePreview">
-              <span>目前使用基礎色塊</span>
-            </div>
+            <label class="field-label">可選顏色</label>
+            <div class="swatch-grid" id="swatchGrid" aria-label="常用色票"></div>
           </div>
         </aside>
       </section>

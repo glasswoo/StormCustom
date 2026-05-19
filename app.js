@@ -53,22 +53,16 @@ const state = {
       code: "A-01",
       name: "珍珠白皮",
       color: "#f8f7f2",
-      texture: "",
-      textureName: "",
     },
     B: {
       code: "B-01",
       name: "珍珠白皮",
       color: "#f8f7f2",
-      texture: "",
-      textureName: "",
     },
     C: {
       code: "C-08",
       name: "冷灰皮",
       color: "#aeb2b3",
-      texture: "",
-      textureName: "",
     },
   },
 };
@@ -113,8 +107,6 @@ function applyInitialUrlOverrides() {
     const color = readUrlColor(params.get(zone.toLowerCase()) || params.get(zone));
     if (color) {
       state.zones[zone].color = color;
-      state.zones[zone].texture = "";
-      state.zones[zone].textureName = "";
     }
   });
 }
@@ -132,12 +124,8 @@ function cacheElements() {
   els.zoneHint = document.getElementById("zoneHint");
   els.materialCode = document.getElementById("materialCode");
   els.materialName = document.getElementById("materialName");
-  els.zoneColor = document.getElementById("zoneColor");
   els.swatchGrid = document.getElementById("swatchGrid");
-  els.textureUpload = document.getElementById("textureUpload");
-  els.texturePreview = document.getElementById("texturePreview");
   els.render2dPreview = document.getElementById("render2dPreview");
-  els.clearTextureButton = document.getElementById("clearTextureButton");
   els.sheetPreview = document.getElementById("sheetPreview");
   els.canvas = document.getElementById("shoeCanvas");
   els.renderFallback = document.getElementById("renderFallback");
@@ -189,30 +177,6 @@ function bindActions() {
     renderSheet();
   });
 
-  els.zoneColor.addEventListener("input", () => {
-    const zone = state.activeZone;
-    state.zones[zone].color = els.zoneColor.value;
-    state.zones[zone].texture = "";
-    state.zones[zone].textureName = "";
-    updateThreeMaterials();
-    renderZoneTabs();
-    syncTexturePreview();
-    renderSheet();
-  });
-
-  els.textureUpload.addEventListener("change", handleTextureUpload);
-
-  els.clearTextureButton.addEventListener("click", () => {
-    const zone = state.activeZone;
-    state.zones[zone].texture = "";
-    state.zones[zone].textureName = "";
-    els.textureUpload.value = "";
-    updateThreeMaterials();
-    renderZoneTabs();
-    syncTexturePreview();
-    renderSheet();
-  });
-
   els.exportPngButton.addEventListener("click", exportPng);
   els.exportPdfButton.addEventListener("click", exportPdf);
   els.resetViewButton.addEventListener("click", resetCameraView);
@@ -245,13 +209,10 @@ function renderZoneTabs() {
       const data = state.zones[zone];
       const hiddenClass = visibleZones.includes(zone) ? "" : " is-hidden";
       const activeClass = state.activeZone === zone ? " is-active" : "";
-      const sampleStyle = data.texture
-        ? `background-image:url('${data.texture}')`
-        : `background:${data.color}`;
 
       return `
         <button class="zone-button${activeClass}${hiddenClass}" data-zone="${zone}" type="button">
-          <span class="zone-sample" style="${sampleStyle}"></span>
+          <span class="zone-sample" style="background:${data.color}"></span>
           <span>${zone} ${escapeHtml(zoneLabels[state.model][zone])}</span>
         </button>
       `;
@@ -289,8 +250,6 @@ function renderSwatches() {
       const zone = state.activeZone;
       state.zones[zone].color = button.dataset.swatch;
       state.zones[zone].name = `${button.dataset.swatchName}皮`;
-      state.zones[zone].texture = "";
-      state.zones[zone].textureName = "";
       syncControlsFromState();
       updateThreeMaterials();
       renderZoneTabs();
@@ -303,39 +262,6 @@ function syncControlsFromState() {
   const zone = state.zones[state.activeZone];
   els.materialCode.value = zone.code;
   els.materialName.value = zone.name;
-  els.zoneColor.value = zone.color;
-  syncTexturePreview();
-}
-
-function syncTexturePreview() {
-  const zone = state.zones[state.activeZone];
-  if (zone.texture) {
-    els.texturePreview.style.backgroundImage = `url("${zone.texture}")`;
-    els.texturePreview.innerHTML = `<span>${escapeHtml(zone.textureName || "已套用皮革貼圖")}</span>`;
-  } else {
-    els.texturePreview.style.backgroundImage = "";
-    els.texturePreview.innerHTML = "<span>目前使用基礎色塊</span>";
-  }
-}
-
-function handleTextureUpload(event) {
-  const [file] = event.target.files;
-  if (!file) {
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    const zone = state.activeZone;
-    state.zones[zone].texture = reader.result;
-    state.zones[zone].textureName = file.name;
-    state.zones[zone].name = file.name.replace(/\.[^.]+$/, "");
-    syncControlsFromState();
-    updateThreeMaterials();
-    renderZoneTabs();
-    renderSheet();
-  };
-  reader.readAsDataURL(file);
 }
 
 function initThree() {
@@ -479,24 +405,6 @@ function updateThreeMaterials() {
     const data = state.zones[zone];
     const material = zoneMaterials[zone];
     material.color.set(data.color);
-    if (material.map) {
-      material.map.dispose();
-      material.map = null;
-    }
-    if (data.texture) {
-      const texture = new THREE.TextureLoader().load(data.texture, () => {
-        if (renderer && scene && camera) {
-          renderer.render(scene, camera);
-        }
-      });
-      texture.wrapS = THREE.RepeatWrapping;
-      texture.wrapT = THREE.RepeatWrapping;
-      texture.repeat.set(2.6, 1.8);
-      if ("colorSpace" in texture) {
-        texture.colorSpace = THREE.SRGBColorSpace;
-      }
-      material.map = texture;
-    }
     material.needsUpdate = true;
   });
 }
@@ -1059,7 +967,7 @@ function buildSelectionSheetSvg({ viewBox, ariaLabel, includeValues }) {
   return `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" role="img" aria-label="${escapeAttr(ariaLabel)}">
       <defs>
-        ${svgDefs(activeZones())}
+        ${svgDefs()}
       </defs>
       <rect width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" fill="#fffdf9"/>
       ${sheetColorUnderlays()}
@@ -1243,21 +1151,8 @@ function sheetText(value, x, y, size, maxLength) {
   return `<text x="${x}" y="${y}" font-size="${size}" font-weight="850">${escapeXml(text)}</text>`;
 }
 
-function svgDefs(zones) {
-  const zoneDefs = zones
-    .filter((zone) => state.zones[zone].texture)
-    .map((zone) => {
-      const data = state.zones[zone];
-      return `
-        <pattern id="texture-${zone}" patternUnits="userSpaceOnUse" width="140" height="140">
-          <image href="${escapeAttr(data.texture)}" width="140" height="140" preserveAspectRatio="xMidYMid slice"></image>
-        </pattern>
-      `;
-    })
-    .join("");
-
+function svgDefs() {
   return `
-    ${zoneDefs}
     ${sheetMaskDefs()}
     <pattern id="carbonFiber" patternUnits="userSpaceOnUse" width="56" height="56" patternTransform="rotate(18)">
       <rect width="56" height="56" fill="#1c1a1a"/>
@@ -1419,13 +1314,11 @@ function slalomBootSvg() {
 }
 
 function zoneFill(zone) {
-  const data = state.zones[zone];
-  return data.texture ? `url(#texture-${zone})` : data.color;
+  return state.zones[zone].color;
 }
 
 function bootZoneFill(zone) {
-  const data = state.zones[zone];
-  if (!data.texture && normalizeColor(data.color) === normalizeColor(defaultZoneColor(zone))) {
+  if (normalizeColor(state.zones[zone].color) === normalizeColor(defaultZoneColor(zone))) {
     return "transparent";
   }
   return zoneFill(zone);

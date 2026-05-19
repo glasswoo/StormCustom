@@ -47,7 +47,7 @@ button {
 }
 
 button i,
-.upload-box i {
+button svg {
   width: 18px;
   height: 18px;
   flex: 0 0 auto;
@@ -100,8 +100,6 @@ p {
 .viewer-head,
 .section-head,
 .block-title,
-.texture-control,
-.color-row,
 .reference-links {
   display: flex;
   align-items: center;
@@ -376,23 +374,8 @@ p {
   box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
 }
 
-.color-row {
-  align-items: stretch;
-  gap: 10px;
-}
-
-.color-input {
-  width: 54px;
-  height: 42px;
-  padding: 3px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
-}
-
 .swatch-grid {
   display: grid;
-  flex: 1;
   grid-template-columns: repeat(6, 1fr);
   gap: 7px;
 }
@@ -402,48 +385,6 @@ p {
   border: 1px solid rgba(36, 23, 21, 0.2);
   border-radius: 8px;
   background: var(--swatch);
-}
-
-.texture-control {
-  gap: 10px;
-}
-
-.upload-box {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 40px;
-  flex: 1;
-  gap: 8px;
-  border-radius: 8px;
-  background: var(--ink);
-  color: #fffaf5;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.upload-box input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.texture-preview {
-  display: grid;
-  min-height: 98px;
-  margin-top: 12px;
-  place-items: center;
-  border: 1px dashed #b8aca2;
-  border-radius: 8px;
-  background-color: #fff;
-  background-size: cover;
-  background-position: center;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 800;
-  text-align: center;
 }
 
 .form-strip {
