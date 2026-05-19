@@ -397,15 +397,18 @@ p {
 
 .swatch-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 7px;
+  grid-template-columns: repeat(auto-fill, minmax(34px, 1fr));
+  gap: 9px;
 }
 
 .swatch-button {
-  min-height: 42px;
+  width: 100%;
+  min-height: 0;
+  aspect-ratio: 1;
   border: 1px solid rgba(36, 23, 21, 0.2);
-  border-radius: 8px;
-  background: var(--swatch);
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
 }
 
 .swatch-button.is-selected {

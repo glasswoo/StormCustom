@@ -1,0 +1,62 @@
+[
+  {
+    "Number": 1,
+    "Name": "深紅色",
+    "Image": "images/materials/01-deep-red.png"
+  },
+  {
+    "Number": 2,
+    "Name": "珍珠白",
+    "Image": "images/materials/02-pearl-white.png"
+  },
+  {
+    "Number": 3,
+    "Name": "霧黑色",
+    "Image": "images/materials/03-matte-black.png"
+  },
+  {
+    "Number": 4,
+    "Name": "冷灰色",
+    "Image": "images/materials/04-cool-gray.png"
+  },
+  {
+    "Number": 5,
+    "Name": "海松綠",
+    "Image": "images/materials/05-pine-green.png"
+  },
+  {
+    "Number": 6,
+    "Name": "鈷藍色",
+    "Image": "images/materials/06-cobalt-blue.png"
+  },
+  {
+    "Number": 7,
+    "Name": "螢光黃",
+    "Image": "images/materials/07-neon-yellow.png"
+  },
+  {
+    "Number": 8,
+    "Name": "競速橘",
+    "Image": "images/materials/08-racing-orange.png"
+  },
+  {
+    "Number": 9,
+    "Name": "紫羅蘭",
+    "Image": "images/materials/09-violet.png"
+  },
+  {
+    "Number": 10,
+    "Name": "沙棕色",
+    "Image": "images/materials/10-sand-brown.png"
+  },
+  {
+    "Number": 11,
+    "Name": "碳纖黑",
+    "Image": "images/materials/11-carbon-black.png"
+  },
+  {
+    "Number": 12,
+    "Name": "金屬金",
+    "Image": "images/materials/12-metallic-gold.png"
+  }
+]

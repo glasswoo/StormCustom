@@ -37,3 +37,19 @@ GitHub Actions 只會發布：
 - `.nojekyll`
 
 不會把 workflow 或 README 打包到公開網站裡。
+
+## 材質顏色設定
+
+色票由 `images/materials/colors.json` 控制：
+
+```json
+[
+  {
+    "Number": 1,
+    "Name": "深紅色",
+    "Image": "images/materials/01-deep-red.png"
+  }
+]
+```
+
+`Number` 會顯示為兩位數料號，例如 `01/深紅色`；`Image` 會直接作為 A / B / C 分區與工廠表格色塊的材質填充。

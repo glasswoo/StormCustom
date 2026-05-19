@@ -5,6 +5,7 @@ const SHOE_PREVIEW_VIEWBOXES = {
   speed: "120 610 1115 760",
   slalom: "120 610 1115 760",
 };
+const MATERIALS_JSON_PATH = "images/materials/colors.json";
 
 const zoneLabels = {
   speed: {
@@ -19,20 +20,37 @@ const zoneLabels = {
   },
 };
 
-const palette = [
-  { code: "01", name: "深紅色", color: "#c7302b" },
-  { code: "02", name: "珍珠白", color: "#f8f7f2" },
-  { code: "03", name: "霧黑色", color: "#231f20" },
-  { code: "04", name: "冷灰色", color: "#aeb2b3" },
-  { code: "05", name: "海松綠", color: "#0f766e" },
-  { code: "06", name: "鈷藍色", color: "#1d4ed8" },
-  { code: "07", name: "螢光黃", color: "#d6ff2f" },
-  { code: "08", name: "競速橘", color: "#f97316" },
-  { code: "09", name: "紫羅蘭", color: "#7c3aed" },
-  { code: "10", name: "沙棕色", color: "#b4875f" },
-  { code: "11", name: "碳纖黑", color: "#343434" },
-  { code: "12", name: "金屬金", color: "#c58c31" },
+const materialColorFallbacks = {
+  "01": "#c7302b",
+  "02": "#f8f7f2",
+  "03": "#231f20",
+  "04": "#aeb2b3",
+  "05": "#0f766e",
+  "06": "#1d4ed8",
+  "07": "#d6ff2f",
+  "08": "#f97316",
+  "09": "#7c3aed",
+  "10": "#b4875f",
+  "11": "#343434",
+  "12": "#c58c31",
+};
+
+const fallbackPalette = [
+  { Number: 1, Name: "深紅色", Image: "images/materials/01-deep-red.png" },
+  { Number: 2, Name: "珍珠白", Image: "images/materials/02-pearl-white.png" },
+  { Number: 3, Name: "霧黑色", Image: "images/materials/03-matte-black.png" },
+  { Number: 4, Name: "冷灰色", Image: "images/materials/04-cool-gray.png" },
+  { Number: 5, Name: "海松綠", Image: "images/materials/05-pine-green.png" },
+  { Number: 6, Name: "鈷藍色", Image: "images/materials/06-cobalt-blue.png" },
+  { Number: 7, Name: "螢光黃", Image: "images/materials/07-neon-yellow.png" },
+  { Number: 8, Name: "競速橘", Image: "images/materials/08-racing-orange.png" },
+  { Number: 9, Name: "紫羅蘭", Image: "images/materials/09-violet.png" },
+  { Number: 10, Name: "沙棕色", Image: "images/materials/10-sand-brown.png" },
+  { Number: 11, Name: "碳纖黑", Image: "images/materials/11-carbon-black.png" },
+  { Number: 12, Name: "金屬金", Image: "images/materials/12-metallic-gold.png" },
 ];
+
+let palette = [];
 
 const state = {
   model: "speed",
@@ -53,16 +71,19 @@ const state = {
       code: "02",
       name: "珍珠白",
       color: "#f8f7f2",
+      image: "images/materials/02-pearl-white.png",
     },
     B: {
       code: "02",
       name: "珍珠白",
       color: "#f8f7f2",
+      image: "images/materials/02-pearl-white.png",
     },
     C: {
       code: "04",
       name: "冷灰色",
       color: "#aeb2b3",
+      image: "images/materials/04-cool-gray.png",
     },
   },
 };
@@ -77,8 +98,10 @@ let zoneMaterials = {};
 let dragState = null;
 let animationId = 0;
 
-function init() {
+async function init() {
   cacheElements();
+  await loadPalette();
+  applyDefaultZoneMaterials();
   applyInitialUrlOverrides();
   bindFormFields();
   bindActions();
@@ -95,6 +118,44 @@ function init() {
   }
 }
 
+async function loadPalette() {
+  try {
+    const response = await fetch(MATERIALS_JSON_PATH, { cache: "no-cache" });
+    if (!response.ok) {
+      throw new Error("無法載入材質顏色設定");
+    }
+    const materials = await response.json();
+    palette = normalizePalette(materials);
+  } catch (error) {
+    console.warn(error);
+    palette = normalizePalette(fallbackPalette);
+  }
+}
+
+function normalizePalette(materials) {
+  return (Array.isArray(materials) ? materials : [])
+    .map((item) => {
+      const code = materialCode(item.Number);
+      return {
+        code,
+        name: String(item.Name || "").trim(),
+        image: String(item.Image || "").trim(),
+        color: materialColorFallbacks[code] || "#f8f7f2",
+      };
+    })
+    .filter((item) => item.code && item.name && item.image);
+}
+
+function applyDefaultZoneMaterials() {
+  const defaults = defaultZoneMaterials();
+  ["A", "B", "C"].forEach((zone) => {
+    const item = paletteItemForCode(defaults[zone]) || palette[0];
+    if (item) {
+      applyPaletteItemToZone(zone, item);
+    }
+  });
+}
+
 function applyInitialUrlOverrides() {
   const params = new URLSearchParams(window.location.search);
   const model = params.get("model");
@@ -104,9 +165,9 @@ function applyInitialUrlOverrides() {
   }
 
   ["A", "B", "C"].forEach((zone) => {
-    const color = readUrlColor(params.get(zone.toLowerCase()) || params.get(zone));
-    if (color) {
-      setZoneColor(zone, color);
+    const value = params.get(zone.toLowerCase()) || params.get(zone);
+    if (value) {
+      setZoneMaterialFromUrl(zone, value);
     }
   });
 }
@@ -200,7 +261,7 @@ function renderZoneTabs() {
 
       return `
         <button class="zone-button${activeClass}${hiddenClass}" data-zone="${zone}" type="button">
-          <span class="zone-sample" style="background:${data.color}"></span>
+          <span class="zone-sample" style="${escapeAttr(materialPreviewStyle(data))}"></span>
           <span>${zone} ${escapeHtml(zoneLabels[state.model][zone])}</span>
         </button>
       `;
@@ -222,10 +283,8 @@ function renderSwatches() {
       (item) => `
         <button
           class="swatch-button"
-          style="--swatch:${item.color}"
-          data-swatch="${item.color}"
-          data-swatch-code="${item.code}"
-          data-swatch-name="${escapeHtml(item.name)}"
+          style="${escapeAttr(materialPreviewStyle(item))}"
+          data-material-code="${item.code}"
           title="${escapeHtml(materialLabel(item))}"
           aria-label="${escapeHtml(materialLabel(item))}"
           aria-pressed="false"
@@ -235,13 +294,13 @@ function renderSwatches() {
     )
     .join("");
 
-  els.swatchGrid.querySelectorAll("[data-swatch]").forEach((button) => {
+  els.swatchGrid.querySelectorAll("[data-material-code]").forEach((button) => {
     button.addEventListener("click", () => {
-      applyPaletteItemToZone(state.activeZone, {
-        code: button.dataset.swatchCode,
-        name: button.dataset.swatchName,
-        color: button.dataset.swatch,
-      });
+      const item = paletteItemForCode(button.dataset.materialCode);
+      if (!item) {
+        return;
+      }
+      applyPaletteItemToZone(state.activeZone, item);
       syncControlsFromState();
       updateThreeMaterials();
       renderZoneTabs();
@@ -256,6 +315,19 @@ function syncControlsFromState() {
   updateSwatchSelection();
 }
 
+function setZoneMaterialFromUrl(zone, value) {
+  const item = paletteItemForCode(value);
+  if (item) {
+    applyPaletteItemToZone(zone, item);
+    return;
+  }
+
+  const color = readUrlColor(value);
+  if (color) {
+    setZoneColor(zone, color);
+  }
+}
+
 function setZoneColor(zone, color) {
   const item = paletteItemForColor(color);
   if (item) {
@@ -265,12 +337,14 @@ function setZoneColor(zone, color) {
   state.zones[zone].code = "--";
   state.zones[zone].name = "自訂色";
   state.zones[zone].color = color;
+  state.zones[zone].image = "";
 }
 
 function applyPaletteItemToZone(zone, item) {
   state.zones[zone].code = item.code;
   state.zones[zone].name = item.name;
   state.zones[zone].color = item.color;
+  state.zones[zone].image = item.image;
 }
 
 function paletteItemForColor(color) {
@@ -278,14 +352,32 @@ function paletteItemForColor(color) {
   return palette.find((item) => normalizeColor(item.color) === normalized);
 }
 
+function paletteItemForCode(value) {
+  const code = materialCode(value);
+  return palette.find((item) => item.code === code);
+}
+
 function materialLabel(data) {
   return `${data.code}/${data.name}`;
 }
 
+function materialCode(value) {
+  const number = Number.parseInt(String(value || "").replace(/^0+/, ""), 10);
+  return Number.isFinite(number) && number > 0 ? String(number).padStart(2, "0") : "";
+}
+
+function materialPreviewStyle(item) {
+  const backgroundColor = `background-color:${item.color || "#fffdf9"}`;
+  if (!item.image) {
+    return backgroundColor;
+  }
+  return `${backgroundColor};background-image:url('${escapeAttr(materialImageHref(item.image))}')`;
+}
+
 function updateSwatchSelection() {
-  const selectedColor = normalizeColor(state.zones[state.activeZone].color);
-  els.swatchGrid.querySelectorAll("[data-swatch]").forEach((button) => {
-    const isSelected = normalizeColor(button.dataset.swatch) === selectedColor;
+  const selectedCode = state.zones[state.activeZone].code;
+  els.swatchGrid.querySelectorAll("[data-material-code]").forEach((button) => {
+    const isSelected = button.dataset.materialCode === selectedCode;
     button.classList.toggle("is-selected", isSelected);
     button.setAttribute("aria-pressed", isSelected ? "true" : "false");
   });
@@ -432,6 +524,24 @@ function updateThreeMaterials() {
     const data = state.zones[zone];
     const material = zoneMaterials[zone];
     material.color.set(data.color);
+    if (material.map) {
+      material.map.dispose();
+      material.map = null;
+    }
+    if (data.image) {
+      const texture = new THREE.TextureLoader().load(materialImageHref(data.image), () => {
+        if (renderer && scene && camera) {
+          renderer.render(scene, camera);
+        }
+      });
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(2.6, 1.8);
+      if ("colorSpace" in texture) {
+        texture.colorSpace = THREE.SRGBColorSpace;
+      }
+      material.map = texture;
+    }
     material.needsUpdate = true;
   });
 }
@@ -1146,13 +1256,13 @@ function sheetZoneMarkOverlays() {
   }
 
   const marks = [];
-  if (bootZoneFill("A") !== "transparent") {
+  if (!isDefaultZoneMaterial("A")) {
     marks.push(`<text x="718" y="1183" font-size="100" font-weight="900">A</text>`);
   }
-  if (bootZoneFill("B") !== "transparent") {
+  if (!isDefaultZoneMaterial("B")) {
     marks.push(`<text x="595" y="878" font-size="100" font-weight="900">B</text>`);
   }
-  if (bootZoneFill("C") !== "transparent") {
+  if (!isDefaultZoneMaterial("C")) {
     marks.push(`
       <text x="314" y="832" font-size="100" font-weight="900">C</text>
       <text x="1042" y="1205" font-size="100" font-weight="900">C</text>
@@ -1167,7 +1277,7 @@ function sheetZoneMarkOverlays() {
 }
 
 function hasModifiedBootZones() {
-  return activeZones().some((zone) => bootZoneFill(zone) !== "transparent");
+  return activeZones().some((zone) => !isDefaultZoneMaterial(zone));
 }
 
 function sheetText(value, x, y, size, maxLength) {
@@ -1180,6 +1290,7 @@ function sheetText(value, x, y, size, maxLength) {
 
 function svgDefs() {
   return `
+    ${materialPatternDefs()}
     ${sheetMaskDefs()}
     <pattern id="carbonFiber" patternUnits="userSpaceOnUse" width="56" height="56" patternTransform="rotate(18)">
       <rect width="56" height="56" fill="#1c1a1a"/>
@@ -1198,6 +1309,22 @@ function svgDefs() {
       <feDropShadow dx="0" dy="24" stdDeviation="18" flood-color="#241715" flood-opacity="0.22"/>
     </filter>
   `;
+}
+
+function materialPatternDefs() {
+  return activeZones()
+    .map((zone) => {
+      const data = state.zones[zone];
+      if (!data.image) {
+        return "";
+      }
+      return `
+        <pattern id="${materialPatternId(zone)}" patternUnits="userSpaceOnUse" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}">
+          <image href="${escapeAttr(materialImageHref(data.image))}" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" preserveAspectRatio="none"></image>
+        </pattern>
+      `;
+    })
+    .join("");
 }
 
 function sheetMaskDefs() {
@@ -1341,30 +1468,31 @@ function slalomBootSvg() {
 }
 
 function zoneFill(zone) {
-  return state.zones[zone].color;
+  return state.zones[zone].image ? `url(#${materialPatternId(zone)})` : state.zones[zone].color;
 }
 
 function bootZoneFill(zone) {
-  if (normalizeColor(state.zones[zone].color) === normalizeColor(defaultZoneColor(zone))) {
-    return "transparent";
-  }
   return zoneFill(zone);
 }
 
-function defaultZoneColor(zone) {
-  const defaults = {
-    speed: {
-      A: "#f8f7f2",
-      B: "#f8f7f2",
-      C: "#aeb2b3",
-    },
-    slalom: {
-      A: "#f8f7f2",
-      B: "#f8f7f2",
-      C: "#aeb2b3",
-    },
+function materialPatternId(zone) {
+  return `material-pattern-${zone}`;
+}
+
+function materialImageHref(path) {
+  return new URL(path, window.location.href).href;
+}
+
+function defaultZoneMaterials() {
+  return {
+    A: "02",
+    B: "02",
+    C: "04",
   };
-  return defaults[state.model][zone] || "#ffffff";
+}
+
+function isDefaultZoneMaterial(zone) {
+  return state.zones[zone].code === defaultZoneMaterials()[zone];
 }
 
 function normalizeColor(color) {
@@ -1399,6 +1527,11 @@ async function sheetSvgToPng() {
 
 async function inlineSvgImages(svg) {
   const urls = new Set([sheetImageHref()]);
+  activeZones().forEach((zone) => {
+    if (state.zones[zone].image) {
+      urls.add(materialImageHref(state.zones[zone].image));
+    }
+  });
   if (state.model === "speed") {
     activeZones().forEach((zone) => urls.add(maskImageHref(zone)));
     urls.add(fixedOverlayHref("strap"));
