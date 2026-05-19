@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>STORM SKATES 客製鞋選色工具</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">STORM SKATES</p>
+        <h1>客製鞋選色工具</h1>
+      </div>
+      <div class="topbar-actions" aria-label="輸出工具列">
+        <button class="ghost-button three-only" id="resetViewButton" type="button" hidden>
+          <i data-lucide="rotate-3d"></i>
+          重置視角
+        </button>
+        <button class="ghost-button" id="exportPngButton" type="button">
+          <i data-lucide="image-down"></i>
+          匯出圖片
+        </button>
+        <button class="primary-button" id="exportPdfButton" type="button">
+          <i data-lucide="file-down"></i>
+          匯出 PDF
+        </button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="studio-surface" aria-label="2D 預覽與選色">
+        <div class="viewer-panel">
+          <div class="viewer-head">
+            <div>
+              <h2>2D 選色預覽</h2>
+              <p>依選色單鞋圖即時套色，黑色碳纖維區固定不可選色。</p>
+            </div>
+            <div class="model-switch" role="group" aria-label="鞋款">
+              <button class="segmented-button is-active" data-model="speed" type="button">競速鞋</button>
+              <button class="segmented-button" data-model="slalom" type="button">速樁鞋</button>
+            </div>
+          </div>
+          <div class="render-frame">
+            <div id="render2dPreview" class="render-2d-preview" aria-label="2D 鞋款選色預覽"></div>
+            <canvas id="shoeCanvas" class="three-cache" aria-label="3D 鞋款預覽" hidden></canvas>
+            <div class="render-fallback" id="renderFallback" hidden>3D 模組載入中</div>
+          </div>
+        </div>
+
+        <aside class="control-panel" aria-label="選色控制">
+          <div class="panel-block">
+            <div class="block-title">
+              <h2>鞋身分區</h2>
+              <span id="zoneHint">競速鞋使用 A / B / C 三區</span>
+            </div>
+            <div class="zone-tabs" id="zoneTabs" role="tablist" aria-label="選擇分區"></div>
+          </div>
+
+          <div class="panel-block">
+            <label class="field-label" for="materialCode">料號</label>
+            <input id="materialCode" class="text-input" type="text" autocomplete="off" />
+
+            <label class="field-label" for="materialName">皮色 / 材質名稱</label>
+            <input id="materialName" class="text-input" type="text" autocomplete="off" />
+
+            <label class="field-label" for="zoneColor">基礎色塊</label>
+            <div class="color-row">
+              <input id="zoneColor" class="color-input" type="color" />
+              <div class="swatch-grid" id="swatchGrid" aria-label="常用色票"></div>
+            </div>
+          </div>
+
+          <div class="panel-block">
+            <div class="block-title">
+              <h2>皮質掃描</h2>
+              <span>上傳皮革照片後會套用到目前分區</span>
+            </div>
+            <div class="texture-control">
+              <label class="upload-box" for="textureUpload">
+                <i data-lucide="scan-line"></i>
+                <span>上傳皮革圖</span>
+                <input id="textureUpload" type="file" accept="image/*" />
+              </label>
+              <button class="plain-button" id="clearTextureButton" type="button">
+                <i data-lucide="eraser"></i>
+                清除貼圖
+              </button>
+            </div>
+            <div class="texture-preview" id="texturePreview">
+              <span>目前使用基礎色塊</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="form-strip" aria-label="客製資料">
+        <div class="form-grid">
+          <label>
+            日期
+            <input data-field="date" type="date" />
+          </label>
+          <label>
+            隊伍名稱
+            <input data-field="team" type="text" placeholder="例如：Storm Team" />
+          </label>
+          <label>
+            選手名
+            <input data-field="athlete" type="text" />
+          </label>
+          <label>
+            編號
+            <input data-field="orderNo" type="text" />
+          </label>
+          <label>
+            腳長 CM
+            <input data-field="footLength" type="number" min="10" max="35" step="0.1" />
+          </label>
+          <label>
+            加大 CM
+            <input data-field="allowance" type="number" min="0" max="3" step="0.1" />
+          </label>
+          <label>
+            孔距
+            <select data-field="mount">
+              <option value="165">165</option>
+              <option value="180">180</option>
+              <option value="195">195</option>
+              <option value="165 / 180 / 195">165 / 180 / 195</option>
+            </select>
+          </label>
+          <label>
+            繡名字
+            <input data-field="embroidery" type="text" />
+          </label>
+          <label class="wide-field">
+            備註
+            <input data-field="notes" type="text" />
+          </label>
+        </div>
+      </section>
+
+      <section class="sheet-section" aria-label="選色單預覽">
+        <div class="section-head">
+          <div>
+            <h2>工廠選色單預覽</h2>
+            <p>此版面會隨資料與配色同步更新，匯出後可直接作為製作參考。</p>
+          </div>
+          <div class="reference-links">
+            <a href="images/競速鞋參考圖片/競速鞋選色單.jpg" target="_blank" rel="noreferrer">競速原表</a>
+            <a href="images/速樁鞋參考圖片/速樁鞋選色單.jpg" target="_blank" rel="noreferrer">速樁原表</a>
+          </div>
+        </div>
+        <div class="sheet-stage">
+          <div id="sheetPreview" class="sheet-preview"></div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
