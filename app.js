@@ -1156,20 +1156,37 @@ function sheetMaskUnderlay(model, zone) {
 }
 
 function sheetFixedOverlays() {
-  if (state.model !== "speed") {
-    return "";
+  if (state.model === "speed") {
+    return `
+      <g id="fixed-overlays" pointer-events="none">
+        ${speedFixedStrapOverlay()}
+      </g>
+    `;
   }
-  return `
-    <g id="fixed-overlays" pointer-events="none">
-      ${speedFixedStrapOverlay()}
-    </g>
-  `;
+
+  if (state.model === "slalom") {
+    return `
+      <g id="slalom-correction-overlays" pointer-events="none">
+        ${slalomAHeelCorrectionOverlay()}
+      </g>
+    `;
+  }
+
+  return "";
 }
 
 function speedFixedStrapOverlay() {
   return `
     <image id="speed-fixed-strap-overlay" href="${escapeAttr(fixedOverlayHref("strap"))}" x="0" y="0" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" preserveAspectRatio="none"></image>
   `;
+}
+
+function slalomAHeelCorrectionOverlay() {
+  const fill = bootZoneFill("A");
+  if (fill === "transparent") {
+    return "";
+  }
+  return `<rect x="0" y="0" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" fill="${fill}" mask="url(#slalom-A-heel-correction-mask)"/>`;
 }
 
 function speedCarbonUnderlay() {
@@ -1187,6 +1204,7 @@ function slalomSheetUnderlays() {
   return `
     <g id="slalom-zone-underlays">
       ${slalomMaskUnderlay("A")}
+      ${slalomFixedRimUnderlay()}
       ${slalomMaskUnderlay("B")}
     </g>
   `;
@@ -1194,6 +1212,10 @@ function slalomSheetUnderlays() {
 
 function slalomMaskUnderlay(zone) {
   return sheetMaskUnderlay("slalom", zone);
+}
+
+function slalomFixedRimUnderlay() {
+  return `<rect x="0" y="0" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" fill="#302c2b" mask="url(#slalom-fixed-rim-mask)"/>`;
 }
 
 function sheetValueOverlays() {
@@ -1317,7 +1339,7 @@ function materialPatternDefs() {
 
 function sheetMaskDefs() {
   const model = state.model;
-  return activeZones()
+  const zoneMasks = activeZones()
     .map(
       (zone) => `
         <mask id="${model}-mask-${zone}" maskUnits="userSpaceOnUse" x="0" y="0" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" mask-type="luminance" style="mask-type: luminance;">
@@ -1326,6 +1348,20 @@ function sheetMaskDefs() {
       `,
     )
     .join("");
+
+  if (model !== "slalom") {
+    return zoneMasks;
+  }
+
+  return `
+    ${zoneMasks}
+    <mask id="slalom-fixed-rim-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" mask-type="luminance" style="mask-type: luminance;">
+      <image href="${escapeAttr(slalomFixedRimMaskHref())}" x="0" y="0" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" preserveAspectRatio="none"></image>
+    </mask>
+    <mask id="slalom-A-heel-correction-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" mask-type="luminance" style="mask-type: luminance;">
+      <image href="${escapeAttr(slalomAHeelCorrectionMaskHref())}" x="0" y="0" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" preserveAspectRatio="none"></image>
+    </mask>
+  `;
 }
 
 function maskImageHref(model, zone) {
@@ -1334,6 +1370,14 @@ function maskImageHref(model, zone) {
 
 function fixedOverlayHref(name) {
   return new URL(`images/generated-masks/speed-fixed-${name}.png`, window.location.href).href;
+}
+
+function slalomFixedRimMaskHref() {
+  return new URL("images/generated-masks/slalom-fixed-rim.png", window.location.href).href;
+}
+
+function slalomAHeelCorrectionMaskHref() {
+  return new URL("images/generated-masks/slalom-A-heel-correction.png", window.location.href).href;
 }
 
 function fieldLine(label, value, x, y, width, suffix = "") {
@@ -1519,6 +1563,10 @@ async function inlineSvgImages(svg) {
   activeZones().forEach((zone) => urls.add(maskImageHref(state.model, zone)));
   if (state.model === "speed") {
     urls.add(fixedOverlayHref("strap"));
+  }
+  if (state.model === "slalom") {
+    urls.add(slalomFixedRimMaskHref());
+    urls.add(slalomAHeelCorrectionMaskHref());
   }
 
   const replacements = await Promise.all(
