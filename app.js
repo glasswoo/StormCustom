@@ -1144,11 +1144,15 @@ function speedSheetUnderlays() {
 }
 
 function speedMaskUnderlay(zone) {
+  return sheetMaskUnderlay("speed", zone);
+}
+
+function sheetMaskUnderlay(model, zone) {
   const fill = bootZoneFill(zone);
   if (fill === "transparent") {
     return "";
   }
-  return `<rect x="0" y="0" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" fill="${fill}" mask="url(#speed-mask-${zone})"/>`;
+  return `<rect x="0" y="0" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" fill="${fill}" mask="url(#${model}-mask-${zone})"/>`;
 }
 
 function sheetFixedOverlays() {
@@ -1182,13 +1186,14 @@ function speedCarbonUnderlay() {
 function slalomSheetUnderlays() {
   return `
     <g id="slalom-zone-underlays">
-      <path d="M190 952 C178 782 220 624 330 520 C466 392 648 424 750 554 C836 663 872 772 1034 862 C1116 907 1192 952 1222 1012 C1228 1070 1195 1118 1135 1142 C883 1215 518 1154 242 1010 C208 992 192 972 190 952 Z" fill="${bootZoneFill("A")}"/>
-      <path d="M214 858 C445 833 662 847 865 908 L835 995 C612 945 410 948 210 988 Z" fill="${bootZoneFill("A")}"/>
-      <path d="M312 520 C410 440 602 426 720 552 C646 574 534 650 462 735 C376 833 296 930 236 1030 C208 840 218 654 312 520 Z" fill="${bootZoneFill("B")}"/>
-      <path d="M252 642 C444 610 595 653 735 748 L700 823 C520 772 365 773 211 818 Z" fill="${bootZoneFill("B")}"/>
-      <path d="M904 895 C1050 930 1162 970 1222 1012 C1202 1090 1146 1128 1052 1138 C1028 1035 982 956 904 895 Z" fill="${bootZoneFill("B")}"/>
+      ${slalomMaskUnderlay("A")}
+      ${slalomMaskUnderlay("B")}
     </g>
   `;
+}
+
+function slalomMaskUnderlay(zone) {
+  return sheetMaskUnderlay("slalom", zone);
 }
 
 function sheetValueOverlays() {
@@ -1311,22 +1316,20 @@ function materialPatternDefs() {
 }
 
 function sheetMaskDefs() {
-  if (state.model !== "speed") {
-    return "";
-  }
-  return ["A", "B", "C"]
+  const model = state.model;
+  return activeZones()
     .map(
       (zone) => `
-        <mask id="speed-mask-${zone}" maskUnits="userSpaceOnUse" x="0" y="0" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" mask-type="luminance" style="mask-type: luminance;">
-          <image href="${escapeAttr(maskImageHref(zone))}" x="0" y="0" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" preserveAspectRatio="none"></image>
+        <mask id="${model}-mask-${zone}" maskUnits="userSpaceOnUse" x="0" y="0" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" mask-type="luminance" style="mask-type: luminance;">
+          <image href="${escapeAttr(maskImageHref(model, zone))}" x="0" y="0" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" preserveAspectRatio="none"></image>
         </mask>
       `,
     )
     .join("");
 }
 
-function maskImageHref(zone) {
-  return new URL(`images/generated-masks/speed-${zone}.png`, window.location.href).href;
+function maskImageHref(model, zone) {
+  return new URL(`images/generated-masks/${model}-${zone}.png`, window.location.href).href;
 }
 
 function fixedOverlayHref(name) {
@@ -1513,8 +1516,8 @@ async function inlineSvgImages(svg) {
       urls.add(materialImageHref(state.zones[zone].image));
     }
   });
+  activeZones().forEach((zone) => urls.add(maskImageHref(state.model, zone)));
   if (state.model === "speed") {
-    activeZones().forEach((zone) => urls.add(maskImageHref(zone)));
     urls.add(fixedOverlayHref("strap"));
   }
 
