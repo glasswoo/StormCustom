@@ -20,6 +20,18 @@ const zoneLabels = {
   },
 };
 
+const formFieldKeys = [
+  "date",
+  "team",
+  "athlete",
+  "orderNo",
+  "footLength",
+  "allowance",
+  "mount",
+  "embroidery",
+  "notes",
+];
+
 const materialColorFallbacks = {
   "01": "#c7302b",
   "02": "#f8f7f2",
@@ -62,7 +74,7 @@ const state = {
     orderNo: "",
     footLength: "",
     allowance: "",
-    mount: "165 / 180 / 195",
+    mount: "",
     embroidery: "",
     notes: "",
   },
@@ -103,9 +115,12 @@ async function init() {
   await loadPalette();
   applyDefaultZoneMaterials();
   applyInitialUrlOverrides();
+  syncFormInputsFromState();
+  updateMountFieldState();
   bindFormFields();
   bindActions();
   renderSwatches();
+  setModelButtonState();
   renderZoneTabs();
   syncControlsFromState();
   renderSheet();
@@ -116,6 +131,23 @@ async function init() {
   if (window.lucide) {
     window.lucide.createIcons();
   }
+
+  window.addEventListener("popstate", () => {
+    applyInitialUrlOverrides();
+    setModelButtonState();
+    if (!activeZones().includes(state.activeZone)) {
+      state.activeZone = "A";
+    }
+    renderZoneTabs();
+    syncFormInputsFromState();
+    syncControlsFromState();
+    renderSheet();
+    setModelButtonState();
+    updateMountFieldState();
+    if (ENABLE_3D_VIEW) {
+      rebuildShoe();
+    }
+  });
 }
 
 async function loadPalette() {
@@ -161,7 +193,16 @@ function applyInitialUrlOverrides() {
   const model = params.get("model");
   if (model === "speed" || model === "slalom") {
     state.model = model;
-    state.fields.mount = model === "speed" ? "165 / 180 / 195" : "165";
+  }
+
+  state.fields.mount = modelDefaultMount(state.model);
+
+  const mountFromQuery = params.get("mount");
+  if (mountFromQuery) {
+    const mountValue = parseMountValue(state.model, mountFromQuery);
+    if (mountValue) {
+      state.fields.mount = mountValue;
+    }
   }
 
   ["A", "B", "C"].forEach((zone) => {
@@ -170,6 +211,66 @@ function applyInitialUrlOverrides() {
       setZoneMaterialFromUrl(zone, value);
     }
   });
+
+  formFieldKeys.forEach((field) => {
+    const value = params.get(field);
+    if (value !== null) {
+      state.fields[field] = value;
+    }
+  });
+}
+
+function parseMountValue(model, value) {
+  if (model === "slalom") {
+    return modelDefaultMount(model);
+  }
+
+  const normalized = String(value || "")
+    .trim()
+    .replace(/\s+/g, "");
+  if (!normalized) {
+    return "";
+  }
+
+  if (["165", "180", "195"].includes(normalized)) {
+    return normalized;
+  }
+
+  if (normalized === "165/180/195") {
+    return modelDefaultMount(model);
+  }
+
+  return "";
+}
+
+function currentDayString() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function modelDefaultMount(model) {
+  return model === "slalom" ? "165" : "";
+}
+
+function isDefaultFieldForShare(field, value, model) {
+  if (value === null || value === undefined || value === "") {
+    return true;
+  }
+
+  if (field === "mount") {
+    return value === modelDefaultMount(model);
+  }
+
+  if (field === "date") {
+    return value === currentDayString();
+  }
+
+  return false;
+}
+
+function isDefaultZoneForShare(zone, model) {
+  const defaults = defaultZoneMaterials(model);
+  const currentValue = shareableZoneValue(state.zones[zone]);
+  return currentValue === defaults[zone];
 }
 
 function readUrlColor(value) {
@@ -194,6 +295,7 @@ function cacheElements() {
   els.resetViewButton = document.getElementById("resetViewButton");
   els.modelButtons = [...document.querySelectorAll("[data-model]")];
   els.formFields = [...document.querySelectorAll("[data-field]")];
+  els.copyShareButton = document.getElementById("copyShareButton");
 }
 
 function bindFormFields() {
@@ -214,8 +316,9 @@ function bindActions() {
       if (!activeZones().includes(state.activeZone)) {
         state.activeZone = "A";
       }
-      state.fields.mount = state.model === "speed" ? "165 / 180 / 195" : "165";
+      state.fields.mount = modelDefaultMount(state.model);
       updateFieldInput("mount", state.fields.mount);
+      updateMountFieldState();
       renderZoneTabs();
       syncControlsFromState();
       renderSheet();
@@ -229,6 +332,9 @@ function bindActions() {
   els.exportPngButton.addEventListener("click", exportPng);
   els.exportPdfButton.addEventListener("click", exportPdf);
   els.resetViewButton.addEventListener("click", resetCameraView);
+  if (els.copyShareButton) {
+    els.copyShareButton.addEventListener("click", copyShareUrl);
+  }
 }
 
 function updateFieldInput(key, value) {
@@ -238,10 +344,38 @@ function updateFieldInput(key, value) {
   }
 }
 
+function syncFormInputsFromState() {
+  els.formFields.forEach((input) => {
+    const key = input.dataset.field;
+    if (key in state.fields) {
+      input.value = state.fields[key];
+    }
+  });
+}
+
 function setModelButtonState() {
   els.modelButtons.forEach((button) => {
     button.classList.toggle("is-active", button.dataset.model === state.model);
   });
+}
+
+function updateMountFieldState() {
+  const mountField = els.formFields.find((field) => field.dataset.field === "mount");
+  if (!mountField) {
+    return;
+  }
+
+  if (state.model === "slalom") {
+    state.fields.mount = modelDefaultMount("slalom");
+    mountField.value = state.fields.mount;
+    mountField.disabled = true;
+    mountField.setAttribute("title", "速樁鞋孔距為固定設定");
+    return;
+  }
+
+  mountField.disabled = false;
+  mountField.removeAttribute("title");
+  mountField.value = state.fields.mount;
 }
 
 function activeZones() {
@@ -1074,6 +1208,7 @@ function renderSheet() {
   currentSheetSvg = buildSheetSvg();
   els.sheetPreview.innerHTML = currentSheetSvg;
   render2dPreview();
+  updateShareUrlFromState();
 }
 
 function buildSheetSvg() {
@@ -1236,7 +1371,7 @@ function sheetValueOverlays() {
 }
 
 function mountTextOverlay() {
-  if (!state.fields.mount || state.fields.mount === "165 / 180 / 195") {
+  if (!state.fields.mount || state.model === "slalom") {
     return "";
   }
   return sheetText(state.fields.mount, 1225, 432, 38, 12);
@@ -1637,6 +1772,69 @@ function fileBaseName() {
   const modelName = state.model === "speed" ? "競速鞋" : "速樁鞋";
   const athlete = state.fields.athlete || state.fields.orderNo || "未命名";
   return `STORM_${modelName}_${athlete}`.replace(/[\\/:*?"<>|]/g, "-");
+}
+
+function buildShareParams() {
+  const params = new URLSearchParams();
+
+  if (state.model !== "speed") {
+    params.set("model", state.model);
+  }
+
+  activeZones().forEach((zone) => {
+    const value = shareableZoneValue(state.zones[zone]);
+    if (value && !isDefaultZoneForShare(zone, state.model)) {
+      params.set(zone.toLowerCase(), value);
+    }
+  });
+
+  formFieldKeys.forEach((field) => {
+    const value = state.fields[field];
+    if (!isDefaultFieldForShare(field, value, state.model)) {
+      params.set(field, String(value));
+    }
+  });
+
+  return params;
+}
+
+function shareableZoneValue(zoneState) {
+  if (!zoneState) {
+    return "";
+  }
+
+  if (zoneState.code && zoneState.code !== "--") {
+    return zoneState.code;
+  }
+
+  if (zoneState.color) {
+    return zoneState.color.replace("#", "");
+  }
+
+  return "";
+}
+
+function shareUrl() {
+  const baseUrl = window.location.href.split("?")[0].split("#")[0];
+  const query = buildShareParams().toString();
+  const hash = window.location.hash || "";
+  return query ? `${baseUrl}?${query}${hash}` : `${baseUrl}${hash}`;
+}
+
+function updateShareUrlFromState() {
+  window.history.replaceState({}, "", shareUrl());
+}
+
+function copyShareUrl() {
+  const url = shareUrl();
+  if (!navigator.clipboard || !navigator.clipboard.writeText) {
+    window.prompt("複製分享連結", url);
+    return;
+  }
+
+  navigator.clipboard.writeText(url).catch(() => {
+    window.prompt("複製分享連結", url);
+  });
 }
 
 function fitText(value, maxLength) {
