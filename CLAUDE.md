@@ -46,7 +46,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
    - `includeValues:true` 時才畫表單文字、料號表（給工廠單），`false` 用於上方 2D 預覽。
 3. 同一段 SVG 字串：左邊 `#render2dPreview`（裁切 viewBox 只看鞋）、下方 `#sheetPreview`（完整選色單）、匯出 PNG/PDF（`sheetSvgToPng` 把所有 `href` 換成 data URL 再畫到 1.5× canvas）。
 
-**Magic numbers**：`SHEET_WIDTH = 2048` / `SHEET_HEIGHT = 1448` 是參考 JPG 與 mask PNG 的實際像素，整支程式都以它為座標系。`sheetValueOverlays()`、`materialValueOverlays()`、`sheetZoneMarkOverlays()` 的 x/y 全是手動對齊到參考 JPG 上的欄位位置 — 換參考 JPG 必須重對這些座標。
+**Magic numbers**：`SHEET_WIDTH = 2048` / `SHEET_HEIGHT = 1448` 是參考 JPG 與 mask PNG 的實際像素，整支程式都以它為座標系。`sheetValueOverlays()`、`materialValueOverlays()` 的 x/y 全是手動對齊到參考 JPG 上的欄位位置 — 換參考 JPG 必須重對這些座標。A/B/C 分區字樣由參考 JPG 自己印著，色塊覆蓋（multiply blend）後自然壓暗、不再額外畫文字。
 
 ### URL sharing
 state 會即時寫回 URL query string（`updateShareUrlFromState` → `history.replaceState`）。`model`、`a` / `b` / `c`（料號或 6 碼 hex）、表單欄位都可分享。`buildShareParams` / `isDefaultFieldForShare` 會省略預設值（當天日期、預設孔距、空 zone）讓 URL 短一點。

@@ -1287,7 +1287,6 @@ function buildSelectionSheetSvg({ viewBox, ariaLabel, includeValues }) {
       ${sheetColorUnderlays()}
       <image href="${escapeAttr(sheetImageHref())}" x="0" y="0" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" preserveAspectRatio="none" style="mix-blend-mode:multiply"></image>
       ${sheetFixedOverlays()}
-      ${sheetZoneMarkOverlays()}
       ${includeValues ? sheetValueOverlays() : ""}
     </svg>
   `;
@@ -1436,36 +1435,6 @@ function materialValueOverlays() {
       `;
     })
     .join("");
-}
-
-function sheetZoneMarkOverlays() {
-  if (state.model !== "speed" || !hasModifiedBootZones()) {
-    return "";
-  }
-
-  const marks = [];
-  if (!isDefaultZoneMaterial("A")) {
-    marks.push(`<text x="718" y="1183" font-size="100" font-weight="900">A</text>`);
-  }
-  if (!isDefaultZoneMaterial("B")) {
-    marks.push(`<text x="595" y="878" font-size="100" font-weight="900">B</text>`);
-  }
-  if (!isDefaultZoneMaterial("C")) {
-    marks.push(`
-      <text x="314" y="832" font-size="100" font-weight="900">C</text>
-      <text x="1042" y="1205" font-size="100" font-weight="900">C</text>
-    `);
-  }
-
-  return `
-    <g id="zone-mark-overlays" font-family="Arial, 'Noto Sans TC', sans-serif" fill="#241715" pointer-events="none">
-      ${marks.join("")}
-    </g>
-  `;
-}
-
-function hasModifiedBootZones() {
-  return activeZones().some((zone) => !isDefaultZoneMaterial(zone));
 }
 
 function sheetText(value, x, y, size, maxLength) {
@@ -1693,10 +1662,6 @@ function materialPatternId(zone) {
 
 function materialImageHref(path) {
   return new URL(path, window.location.href).href;
-}
-
-function isDefaultZoneMaterial(zone) {
-  return state.zones[zone].number === defaultZoneNumber();
 }
 
 function isValidHexColor(value) {
