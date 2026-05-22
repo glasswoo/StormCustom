@@ -1421,17 +1421,21 @@ function mountTextOverlay() {
 function materialValueOverlays() {
   const zones = activeZones();
   const table = state.model === "speed"
-    ? { y: 716, row: 190, codeX: 1414, nameX: 1784 }
-    : { y: 726, row: 200, codeX: 1350, nameX: 1778 };
+    ? { y: 716, row: 190, codeX: 1414, nameCenterX: 1750 }
+    : { y: 726, row: 200, codeX: 1350, nameCenterX: 1750 };
 
   return zones
     .map((zone, index) => {
       const data = state.zones[zone];
       const y = table.y + index * table.row + table.row / 2 + 12;
       const material = zoneMaterialData(data);
+      const name = fitText(material ? material.name : data.name, 8);
+      const nameMarkup = name
+        ? `<text x="${table.nameCenterX}" y="${y}" font-size="36" font-weight="850" text-anchor="middle">${escapeXml(name)}</text>`
+        : "";
       return `
         ${sheetText(zoneDisplayCode(data), table.codeX, y, 42, 12)}
-        ${sheetText(material ? material.name : data.name, table.nameX, y, 36, 8)}
+        ${nameMarkup}
       `;
     })
     .join("");
