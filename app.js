@@ -34,6 +34,44 @@ const formFieldKeys = [
 
 let palette = [];
 
+function blankZoneMaterial() {
+  return {
+    number: null,
+    code: "",
+    name: "",
+    color: "",
+    image: "",
+  };
+}
+
+function initialZones() {
+  return {
+    A: blankZoneMaterial(),
+    B: blankZoneMaterial(),
+    C: blankZoneMaterial(),
+  };
+}
+
+function defaultZoneNumber() {
+  return null;
+}
+
+function isBlankZoneState(data) {
+  return !data || (data.number == null && !data.color);
+}
+
+function zoneMaterialData(zoneState) {
+  if (!zoneState) {
+    return zoneState;
+  }
+
+  if (zoneState.number === null || zoneState.number === undefined) {
+    return zoneState;
+  }
+
+  return paletteItemForCode(zoneState.number) || zoneState;
+}
+
 const state = {
   model: "speed",
   activeZone: "A",
@@ -48,26 +86,7 @@ const state = {
     embroidery: "",
     notes: "",
   },
-  zones: {
-    A: {
-      code: "05",
-      name: "亮面海松綠",
-      color: "#0f766e",
-      image: "images/materials/05.png",
-    },
-    B: {
-      code: "05",
-      name: "亮面海松綠",
-      color: "#0f766e",
-      image: "images/materials/05.png",
-    },
-    C: {
-      code: "13",
-      name: "亮面櫻桃紅",
-      color: "#b01f45",
-      image: "images/materials/13.png",
-    },
-  },
+  zones: initialZones(),
 };
 
 const els = {};
@@ -83,7 +102,6 @@ let animationId = 0;
 async function init() {
   cacheElements();
   await loadPalette();
-  applyDefaultZoneMaterials();
   applyInitialUrlOverrides();
   syncFormInputsFromState();
   updateMountFieldState();
@@ -137,29 +155,24 @@ async function loadPalette() {
 function normalizePalette(materials) {
   return (Array.isArray(materials) ? materials : [])
     .map((item) => {
-      const code = materialCode(item.Number);
-      const color = String(item.Color || item.color || "#f8f7f2").trim();
+      const number = Number(item.number);
+      if (!Number.isInteger(number) || number <= 0) {
+        return null;
+      }
+      const color = String(item.color || "#f8f7f2").trim();
       return {
-        code,
-        name: String(item.Name || "").trim(),
-        image: String(item.Image || "").trim(),
+        number,
+        name: String(item.name || "").trim(),
+        image: String(item.image || "").trim(),
         color: isValidHexColor(color) ? normalizeColor(color) : "#f8f7f2",
       };
     })
-    .filter((item) => item.code && item.name && item.image);
-}
-
-function applyDefaultZoneMaterials() {
-  const defaults = defaultZoneMaterials();
-  ["A", "B", "C"].forEach((zone) => {
-    const item = paletteItemForCode(defaults[zone]) || palette[0];
-    if (item) {
-      applyPaletteItemToZone(zone, item);
-    }
-  });
+    .filter((item) => item && item.name && item.image);
 }
 
 function applyInitialUrlOverrides() {
+  state.zones = initialZones();
+
   const params = new URLSearchParams(window.location.search);
   const model = params.get("model");
   if (model === "speed" || model === "slalom") {
@@ -239,9 +252,7 @@ function isDefaultFieldForShare(field, value, model) {
 }
 
 function isDefaultZoneForShare(zone, model) {
-  const defaults = defaultZoneMaterials(model);
-  const currentValue = shareableZoneValue(state.zones[zone]);
-  return currentValue === defaults[zone];
+  return state.zones[zone].number === defaultZoneNumber();
 }
 
 function readUrlColor(value) {
@@ -389,7 +400,7 @@ function renderSwatches() {
         <button
           class="swatch-button"
           style="${escapeAttr(materialPreviewStyle(item))}"
-          data-material-code="${item.code}"
+          data-material-code="${materialCode(item.number)}"
           title="${escapeHtml(materialLabel(item))}"
           aria-label="${escapeHtml(materialLabel(item))}"
           aria-pressed="false"
@@ -440,6 +451,7 @@ function setZoneColor(zone, color) {
     applyPaletteItemToZone(zone, item);
     return;
   }
+  state.zones[zone].number = null;
   state.zones[zone].code = "--";
   state.zones[zone].name = "自訂色";
   state.zones[zone].color = color;
@@ -447,7 +459,8 @@ function setZoneColor(zone, color) {
 }
 
 function applyPaletteItemToZone(zone, item) {
-  state.zones[zone].code = item.code;
+  state.zones[zone].number = item.number;
+  state.zones[zone].code = materialCode(item.number);
   state.zones[zone].name = item.name;
   state.zones[zone].color = item.color;
   state.zones[zone].image = item.image;
@@ -459,16 +472,35 @@ function paletteItemForColor(color) {
 }
 
 function paletteItemForCode(value) {
-  const code = materialCode(value);
-  return palette.find((item) => item.code === code);
+  const number = materialNumber(value);
+  return palette.find((item) => item.number === number);
 }
 
 function materialLabel(data) {
-  return `${data.code}/${data.name}`;
+  if (isBlankZoneState(data)) {
+    return "尚未選色";
+  }
+  const material = zoneMaterialData(data);
+  return `${zoneDisplayCode(data)}/${material?.name || "自訂色"}`;
+}
+
+function zoneDisplayCode(data) {
+  if (!data) {
+    return "--";
+  }
+  if (data.number !== null && data.number !== undefined) {
+    return materialCode(data.number);
+  }
+  return data.code || "--";
+}
+
+function materialNumber(value) {
+  const number = Number.parseInt(String(value || "").replace(/^0+/, ""), 10);
+  return Number.isFinite(number) && number > 0 ? number : NaN;
 }
 
 function materialCode(value) {
-  const number = Number.parseInt(String(value || "").replace(/^0+/, ""), 10);
+  const number = Number.isInteger(value) ? value : materialNumber(value);
   return Number.isFinite(number) && number > 0 ? String(number).padStart(2, "0") : "";
 }
 
@@ -483,15 +515,20 @@ function parseZoneSelection(value) {
   }
 
   const [codeToken] = raw.split(/[-_]/, 2);
-  return materialCode(codeToken);
+  const number = materialNumber(codeToken);
+  return Number.isFinite(number) ? number : "";
 }
 
 function materialPreviewStyle(item) {
-  const backgroundColor = `background-color:${item.color || "#fffdf9"}`;
-  if (!item.image) {
+  if (isBlankZoneState(item)) {
+    return "background-color:#fff;background-image:repeating-linear-gradient(135deg, rgba(36,23,21,0.22) 0 2px, transparent 2px 7px);";
+  }
+  const resolved = zoneMaterialData(item);
+  const backgroundColor = `background-color:${resolved?.color || "#fffdf9"}`;
+  if (!resolved?.image) {
     return backgroundColor;
   }
-  const imageUrl = materialImageHref(item.image);
+  const imageUrl = materialImageHref(resolved.image);
   return `${backgroundColor};background-image:url('${escapeAttr(imageUrl)}');background-size:cover;background-position:center;`;
 }
 
@@ -1392,9 +1429,10 @@ function materialValueOverlays() {
     .map((zone, index) => {
       const data = state.zones[zone];
       const y = table.y + index * table.row + table.row / 2 + 12;
+      const material = zoneMaterialData(data);
       return `
-        ${sheetText(data.code, table.codeX, y, 42, 12)}
-        ${sheetText(data.name, table.nameX, y, 36, 8)}
+        ${sheetText(zoneDisplayCode(data), table.codeX, y, 42, 12)}
+        ${sheetText(material ? material.name : data.name, table.nameX, y, 36, 8)}
       `;
     })
     .join("");
@@ -1549,13 +1587,14 @@ function materialTableSvg(zones) {
     .map((zone, index) => {
       const data = state.zones[zone];
       const rowY = y + index * rowHeight;
+      const material = zoneMaterialData(data);
       return `
         <rect x="${x}" y="${rowY}" width="${labelWidth}" height="${rowHeight}" fill="#fffdf9" stroke="#241715" stroke-width="3"/>
         <rect x="${x + labelWidth}" y="${rowY}" width="${codeWidth}" height="${rowHeight}" fill="#fffdf9" stroke="#241715" stroke-width="3"/>
         <rect x="${x + labelWidth + codeWidth}" y="${rowY}" width="${width - labelWidth - codeWidth}" height="${rowHeight}" fill="#fffdf9" stroke="#241715" stroke-width="3"/>
         <text x="${x + 42}" y="${rowY + rowHeight / 2 + 32}" font-size="88" font-weight="900" fill="#241715">${zone}</text>
-        <text x="${x + labelWidth + 34}" y="${rowY + rowHeight / 2 + 12}" font-size="44" font-weight="900" fill="#241715">${escapeXml(fitText(data.code, 11))}</text>
-        <text x="${x + labelWidth + codeWidth + 34}" y="${rowY + rowHeight / 2 + 12}" font-size="36" font-weight="850" fill="#241715">${escapeXml(fitText(data.name, 8))}</text>
+        <text x="${x + labelWidth + 34}" y="${rowY + rowHeight / 2 + 12}" font-size="44" font-weight="900" fill="#241715">${escapeXml(fitText(zoneDisplayCode(data), 11))}</text>
+        <text x="${x + labelWidth + codeWidth + 34}" y="${rowY + rowHeight / 2 + 12}" font-size="36" font-weight="850" fill="#241715">${escapeXml(fitText(material ? material.name : data.name, 8))}</text>
       `;
     })
     .join("");
@@ -1636,7 +1675,12 @@ function slalomBootSvg() {
 }
 
 function zoneFill(zone) {
-  return state.zones[zone].image ? `url(#${materialPatternId(zone)})` : state.zones[zone].color;
+  const data = state.zones[zone];
+  if (isBlankZoneState(data)) {
+    return "transparent";
+  }
+  const material = zoneMaterialData(data);
+  return material?.image ? `url(#${materialPatternId(zone)})` : material?.color || "transparent";
 }
 
 function bootZoneFill(zone) {
@@ -1651,16 +1695,8 @@ function materialImageHref(path) {
   return new URL(path, window.location.href).href;
 }
 
-function defaultZoneMaterials() {
-  return {
-    A: "05",
-    B: "05",
-    C: "13",
-  };
-}
-
 function isDefaultZoneMaterial(zone) {
-  return state.zones[zone].code === defaultZoneMaterials()[zone];
+  return state.zones[zone].number === defaultZoneNumber();
 }
 
 function isValidHexColor(value) {
@@ -1700,8 +1736,9 @@ async function sheetSvgToPng() {
 async function inlineSvgImages(svg) {
   const urls = new Set([sheetImageHref()]);
   activeZones().forEach((zone) => {
-    if (state.zones[zone].image) {
-      urls.add(materialImageHref(state.zones[zone].image));
+    const material = zoneMaterialData(state.zones[zone]);
+    if (material?.image) {
+      urls.add(materialImageHref(material.image));
     }
   });
   activeZones().forEach((zone) => urls.add(maskImageHref(state.model, zone)));
@@ -1809,8 +1846,8 @@ function shareableZoneValue(zoneState) {
     return "";
   }
 
-  if (zoneState.code && zoneState.code !== "--") {
-    return zoneState.code;
+  if (zoneState.number !== null && zoneState.number !== undefined) {
+    return materialCode(zoneState.number);
   }
 
   if (zoneState.color) {
