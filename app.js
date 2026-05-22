@@ -32,36 +32,6 @@ const formFieldKeys = [
   "notes",
 ];
 
-const materialColorFallbacks = {
-  "01": "#c7302b",
-  "02": "#f8f7f2",
-  "03": "#231f20",
-  "04": "#aeb2b3",
-  "05": "#0f766e",
-  "06": "#1d4ed8",
-  "07": "#d6ff2f",
-  "08": "#f97316",
-  "09": "#7c3aed",
-  "10": "#b4875f",
-  "11": "#343434",
-  "12": "#c58c31",
-};
-
-const fallbackPalette = [
-  { Number: 1, Name: "深紅色", Image: "images/materials/01-deep-red.png" },
-  { Number: 2, Name: "珍珠白", Image: "images/materials/02-pearl-white.png" },
-  { Number: 3, Name: "霧黑色", Image: "images/materials/03-matte-black.png" },
-  { Number: 4, Name: "冷灰色", Image: "images/materials/04-cool-gray.png" },
-  { Number: 5, Name: "海松綠", Image: "images/materials/05-pine-green.png" },
-  { Number: 6, Name: "鈷藍色", Image: "images/materials/06-cobalt-blue.png" },
-  { Number: 7, Name: "螢光黃", Image: "images/materials/07-neon-yellow.png" },
-  { Number: 8, Name: "競速橘", Image: "images/materials/08-racing-orange.png" },
-  { Number: 9, Name: "紫羅蘭", Image: "images/materials/09-violet.png" },
-  { Number: 10, Name: "沙棕色", Image: "images/materials/10-sand-brown.png" },
-  { Number: 11, Name: "碳纖黑", Image: "images/materials/11-carbon-black.png" },
-  { Number: 12, Name: "金屬金", Image: "images/materials/12-metallic-gold.png" },
-];
-
 let palette = [];
 
 const state = {
@@ -80,22 +50,22 @@ const state = {
   },
   zones: {
     A: {
-      code: "02",
-      name: "珍珠白",
-      color: "#f8f7f2",
-      image: "images/materials/02-pearl-white.png",
+      code: "05",
+      name: "亮面海松綠",
+      color: "#0f766e",
+      image: "images/materials/05.png",
     },
     B: {
-      code: "02",
-      name: "珍珠白",
-      color: "#f8f7f2",
-      image: "images/materials/02-pearl-white.png",
+      code: "05",
+      name: "亮面海松綠",
+      color: "#0f766e",
+      image: "images/materials/05.png",
     },
     C: {
-      code: "04",
-      name: "冷灰色",
-      color: "#aeb2b3",
-      image: "images/materials/04-cool-gray.png",
+      code: "13",
+      name: "亮面櫻桃紅",
+      color: "#b01f45",
+      image: "images/materials/13.png",
     },
   },
 };
@@ -123,7 +93,7 @@ async function init() {
   setModelButtonState();
   renderZoneTabs();
   syncControlsFromState();
-  renderSheet();
+  void renderSheet();
   if (ENABLE_3D_VIEW) {
     initThree();
   }
@@ -141,7 +111,7 @@ async function init() {
     renderZoneTabs();
     syncFormInputsFromState();
     syncControlsFromState();
-    renderSheet();
+    void renderSheet();
     setModelButtonState();
     updateMountFieldState();
     if (ENABLE_3D_VIEW) {
@@ -159,8 +129,8 @@ async function loadPalette() {
     const materials = await response.json();
     palette = normalizePalette(materials);
   } catch (error) {
-    console.warn(error);
-    palette = normalizePalette(fallbackPalette);
+    console.error(error);
+    palette = [];
   }
 }
 
@@ -168,11 +138,12 @@ function normalizePalette(materials) {
   return (Array.isArray(materials) ? materials : [])
     .map((item) => {
       const code = materialCode(item.Number);
+      const color = String(item.Color || item.color || "#f8f7f2").trim();
       return {
         code,
         name: String(item.Name || "").trim(),
         image: String(item.Image || "").trim(),
-        color: materialColorFallbacks[code] || "#f8f7f2",
+        color: isValidHexColor(color) ? normalizeColor(color) : "#f8f7f2",
       };
     })
     .filter((item) => item.code && item.name && item.image);
@@ -438,7 +409,7 @@ function renderSwatches() {
       syncControlsFromState();
       updateThreeMaterials();
       renderZoneTabs();
-      renderSheet();
+      void renderSheet();
     });
   });
 }
@@ -450,7 +421,8 @@ function syncControlsFromState() {
 }
 
 function setZoneMaterialFromUrl(zone, value) {
-  const item = paletteItemForCode(value);
+  const code = parseZoneSelection(value);
+  const item = code ? paletteItemForCode(code) : null;
   if (item) {
     applyPaletteItemToZone(zone, item);
     return;
@@ -500,16 +472,32 @@ function materialCode(value) {
   return Number.isFinite(number) && number > 0 ? String(number).padStart(2, "0") : "";
 }
 
+function parseZoneSelection(value) {
+  if (!value) {
+    return "";
+  }
+
+  const raw = String(value).trim();
+  if (!raw) {
+    return "";
+  }
+
+  const [codeToken] = raw.split(/[-_]/, 2);
+  return materialCode(codeToken);
+}
+
 function materialPreviewStyle(item) {
   const backgroundColor = `background-color:${item.color || "#fffdf9"}`;
   if (!item.image) {
     return backgroundColor;
   }
-  return `${backgroundColor};background-image:url('${escapeAttr(materialImageHref(item.image))}')`;
+  const imageUrl = materialImageHref(item.image);
+  return `${backgroundColor};background-image:url('${escapeAttr(imageUrl)}');background-size:cover;background-position:center;`;
 }
 
 function updateSwatchSelection() {
-  const selectedCode = state.zones[state.activeZone].code;
+  const active = state.zones[state.activeZone];
+  const selectedCode = active.code;
   els.swatchGrid.querySelectorAll("[data-material-code]").forEach((button) => {
     const isSelected = button.dataset.materialCode === selectedCode;
     button.classList.toggle("is-selected", isSelected);
@@ -656,7 +644,11 @@ function updateThreeMaterials() {
 
   ["A", "B", "C"].forEach((zone) => {
     const data = state.zones[zone];
+    if (!data) {
+      return;
+    }
     const material = zoneMaterials[zone];
+    applyZoneMaterialSettings(material);
     material.color.set(data.color);
     if (material.map) {
       material.map.dispose();
@@ -678,6 +670,19 @@ function updateThreeMaterials() {
     }
     material.needsUpdate = true;
   });
+}
+
+function applyZoneMaterialSettings(material) {
+  const settings = {
+    roughness: 0.62,
+    metalness: 0.01,
+    clearcoat: 0.16,
+    clearcoatRoughness: 0.3,
+  };
+  material.roughness = settings.roughness;
+  material.metalness = settings.metalness;
+  material.clearcoat = settings.clearcoat;
+  material.clearcoatRoughness = settings.clearcoatRoughness;
 }
 
 function rebuildShoe() {
@@ -1648,14 +1653,18 @@ function materialImageHref(path) {
 
 function defaultZoneMaterials() {
   return {
-    A: "02",
-    B: "02",
-    C: "04",
+    A: "05",
+    B: "05",
+    C: "13",
   };
 }
 
 function isDefaultZoneMaterial(zone) {
   return state.zones[zone].code === defaultZoneMaterials()[zone];
+}
+
+function isValidHexColor(value) {
+  return /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(String(value || "").trim());
 }
 
 function normalizeColor(color) {
@@ -1776,10 +1785,7 @@ function fileBaseName() {
 
 function buildShareParams() {
   const params = new URLSearchParams();
-
-  if (state.model !== "speed") {
-    params.set("model", state.model);
-  }
+  params.set("model", state.model);
 
   activeZones().forEach((zone) => {
     const value = shareableZoneValue(state.zones[zone]);
