@@ -1,578 +1,578 @@
 [
   {
-    "Number": 1,
-    "Name": "亮面深紅色",
-    "Image": "images/materials/01.png",
-    "Color": "#c7302b"
+    "number": 1,
+    "name": "亮面深紅色",
+    "image": "images/materials/01.webp",
+    "color": "#c7302b"
   },
   {
-    "Number": 2,
-    "Name": "亮面珍珠白",
-    "Image": "images/materials/02.png",
-    "Color": "#f8f7f2"
+    "number": 2,
+    "name": "亮面珍珠白",
+    "image": "images/materials/02.webp",
+    "color": "#f8f7f2"
   },
   {
-    "Number": 3,
-    "Name": "亮面霧黑色",
-    "Image": "images/materials/03.png",
-    "Color": "#231f20"
+    "number": 3,
+    "name": "亮面霧黑色",
+    "image": "images/materials/03.webp",
+    "color": "#231f20"
   },
   {
-    "Number": 4,
-    "Name": "亮面冷灰色",
-    "Image": "images/materials/04.png",
-    "Color": "#aeb2b3"
+    "number": 4,
+    "name": "亮面冷灰色",
+    "image": "images/materials/04.webp",
+    "color": "#aeb2b3"
   },
   {
-    "Number": 5,
-    "Name": "亮面海松綠",
-    "Image": "images/materials/05.png",
-    "Color": "#0f766e"
+    "number": 5,
+    "name": "亮面海松綠",
+    "image": "images/materials/05.webp",
+    "color": "#0f766e"
   },
   {
-    "Number": 6,
-    "Name": "亮面鈷藍色",
-    "Image": "images/materials/06.png",
-    "Color": "#1d4ed8"
+    "number": 6,
+    "name": "亮面鈷藍色",
+    "image": "images/materials/06.webp",
+    "color": "#1d4ed8"
   },
   {
-    "Number": 7,
-    "Name": "亮面螢光黃",
-    "Image": "images/materials/07.png",
-    "Color": "#d6ff2f"
+    "number": 7,
+    "name": "亮面螢光黃",
+    "image": "images/materials/07.webp",
+    "color": "#d6ff2f"
   },
   {
-    "Number": 8,
-    "Name": "亮面競速橘",
-    "Image": "images/materials/08.png",
-    "Color": "#f97316"
+    "number": 8,
+    "name": "亮面競速橘",
+    "image": "images/materials/08.webp",
+    "color": "#f97316"
   },
   {
-    "Number": 9,
-    "Name": "亮面紫羅蘭",
-    "Image": "images/materials/09.png",
-    "Color": "#7c3aed"
+    "number": 9,
+    "name": "亮面紫羅蘭",
+    "image": "images/materials/09.webp",
+    "color": "#7c3aed"
   },
   {
-    "Number": 10,
-    "Name": "亮面沙棕色",
-    "Image": "images/materials/10.png",
-    "Color": "#b4875f"
+    "number": 10,
+    "name": "亮面沙棕色",
+    "image": "images/materials/10.webp",
+    "color": "#b4875f"
   },
   {
-    "Number": 11,
-    "Name": "亮面碳纖黑",
-    "Image": "images/materials/11.png",
-    "Color": "#343434"
+    "number": 11,
+    "name": "亮面碳纖黑",
+    "image": "images/materials/11.webp",
+    "color": "#343434"
   },
   {
-    "Number": 12,
-    "Name": "亮面金屬金",
-    "Image": "images/materials/12.png",
-    "Color": "#c58c31"
+    "number": 12,
+    "name": "亮面金屬金",
+    "image": "images/materials/12.webp",
+    "color": "#c58c31"
   },
   {
-    "Number": 13,
-    "Name": "亮面櫻桃紅",
-    "Image": "images/materials/13.png",
-    "Color": "#b01f45"
+    "number": 13,
+    "name": "亮面櫻桃紅",
+    "image": "images/materials/13.webp",
+    "color": "#b01f45"
   },
   {
-    "Number": 14,
-    "Name": "亮面薰衣草灰",
-    "Image": "images/materials/14.png",
-    "Color": "#8a82a9"
+    "number": 14,
+    "name": "亮面薰衣草灰",
+    "image": "images/materials/14.webp",
+    "color": "#8a82a9"
   },
   {
-    "Number": 15,
-    "Name": "亮面象牙白",
-    "Image": "images/materials/15.png",
-    "Color": "#f2ece3"
+    "number": 15,
+    "name": "亮面象牙白",
+    "image": "images/materials/15.webp",
+    "color": "#f2ece3"
   },
   {
-    "Number": 16,
-    "Name": "亮面深海藍",
-    "Image": "images/materials/16.png",
-    "Color": "#1d3c6d"
+    "number": 16,
+    "name": "亮面深海藍",
+    "image": "images/materials/16.webp",
+    "color": "#1d3c6d"
   },
   {
-    "Number": 17,
-    "Name": "亮面松石綠",
-    "Image": "images/materials/17.png",
-    "Color": "#177a68"
+    "number": 17,
+    "name": "亮面松石綠",
+    "image": "images/materials/17.webp",
+    "color": "#177a68"
   },
   {
-    "Number": 18,
-    "Name": "亮面砂岩黃",
-    "Image": "images/materials/18.png",
-    "Color": "#c09056"
+    "number": 18,
+    "name": "亮面砂岩黃",
+    "image": "images/materials/18.webp",
+    "color": "#c09056"
   },
   {
-    "Number": 19,
-    "Name": "亮面酒紅棕",
-    "Image": "images/materials/19.png",
-    "Color": "#62311f"
+    "number": 19,
+    "name": "亮面酒紅棕",
+    "image": "images/materials/19.webp",
+    "color": "#62311f"
   },
   {
-    "Number": 20,
-    "Name": "亮面石墨黑",
-    "Image": "images/materials/20.png",
-    "Color": "#292826"
+    "number": 20,
+    "name": "亮面石墨黑",
+    "image": "images/materials/20.webp",
+    "color": "#292826"
   },
   {
-    "Number": 21,
-    "Name": "亮面翡翠綠",
-    "Image": "images/materials/21.png",
-    "Color": "#2a9270"
+    "number": 21,
+    "name": "亮面翡翠綠",
+    "image": "images/materials/21.webp",
+    "color": "#2a9270"
   },
   {
-    "Number": 22,
-    "Name": "亮面胭脂粉",
-    "Image": "images/materials/22.png",
-    "Color": "#d58ca5"
+    "number": 22,
+    "name": "亮面胭脂粉",
+    "image": "images/materials/22.webp",
+    "color": "#d58ca5"
   },
   {
-    "Number": 23,
-    "Name": "亮面鋼藍色",
-    "Image": "images/materials/23.png",
-    "Color": "#5a6e89"
+    "number": 23,
+    "name": "亮面鋼藍色",
+    "image": "images/materials/23.webp",
+    "color": "#5a6e89"
   },
   {
-    "Number": 24,
-    "Name": "亮面煙霧灰",
-    "Image": "images/materials/24.png",
-    "Color": "#918c88"
+    "number": 24,
+    "name": "亮面煙霧灰",
+    "image": "images/materials/24.webp",
+    "color": "#918c88"
   },
   {
-    "Number": 25,
-    "Name": "霧面深紅色",
-    "Image": "images/materials/25.png",
-    "Color": "#c7302b"
+    "number": 25,
+    "name": "霧面深紅色",
+    "image": "images/materials/25.webp",
+    "color": "#c7302b"
   },
   {
-    "Number": 26,
-    "Name": "霧面珍珠白",
-    "Image": "images/materials/26.png",
-    "Color": "#f8f7f2"
+    "number": 26,
+    "name": "霧面珍珠白",
+    "image": "images/materials/26.webp",
+    "color": "#f8f7f2"
   },
   {
-    "Number": 27,
-    "Name": "霧面霧黑色",
-    "Image": "images/materials/27.png",
-    "Color": "#231f20"
+    "number": 27,
+    "name": "霧面霧黑色",
+    "image": "images/materials/27.webp",
+    "color": "#231f20"
   },
   {
-    "Number": 28,
-    "Name": "霧面冷灰色",
-    "Image": "images/materials/28.png",
-    "Color": "#aeb2b3"
+    "number": 28,
+    "name": "霧面冷灰色",
+    "image": "images/materials/28.webp",
+    "color": "#aeb2b3"
   },
   {
-    "Number": 29,
-    "Name": "霧面海松綠",
-    "Image": "images/materials/29.png",
-    "Color": "#0f766e"
+    "number": 29,
+    "name": "霧面海松綠",
+    "image": "images/materials/29.webp",
+    "color": "#0f766e"
   },
   {
-    "Number": 30,
-    "Name": "霧面鈷藍色",
-    "Image": "images/materials/30.png",
-    "Color": "#1d4ed8"
+    "number": 30,
+    "name": "霧面鈷藍色",
+    "image": "images/materials/30.webp",
+    "color": "#1d4ed8"
   },
   {
-    "Number": 31,
-    "Name": "霧面螢光黃",
-    "Image": "images/materials/31.png",
-    "Color": "#d6ff2f"
+    "number": 31,
+    "name": "霧面螢光黃",
+    "image": "images/materials/31.webp",
+    "color": "#d6ff2f"
   },
   {
-    "Number": 32,
-    "Name": "霧面競速橘",
-    "Image": "images/materials/32.png",
-    "Color": "#f97316"
+    "number": 32,
+    "name": "霧面競速橘",
+    "image": "images/materials/32.webp",
+    "color": "#f97316"
   },
   {
-    "Number": 33,
-    "Name": "霧面紫羅蘭",
-    "Image": "images/materials/33.png",
-    "Color": "#7c3aed"
+    "number": 33,
+    "name": "霧面紫羅蘭",
+    "image": "images/materials/33.webp",
+    "color": "#7c3aed"
   },
   {
-    "Number": 34,
-    "Name": "霧面沙棕色",
-    "Image": "images/materials/34.png",
-    "Color": "#b4875f"
+    "number": 34,
+    "name": "霧面沙棕色",
+    "image": "images/materials/34.webp",
+    "color": "#b4875f"
   },
   {
-    "Number": 35,
-    "Name": "霧面碳纖黑",
-    "Image": "images/materials/35.png",
-    "Color": "#343434"
+    "number": 35,
+    "name": "霧面碳纖黑",
+    "image": "images/materials/35.webp",
+    "color": "#343434"
   },
   {
-    "Number": 36,
-    "Name": "霧面金屬金",
-    "Image": "images/materials/36.png",
-    "Color": "#c58c31"
+    "number": 36,
+    "name": "霧面金屬金",
+    "image": "images/materials/36.webp",
+    "color": "#c58c31"
   },
   {
-    "Number": 37,
-    "Name": "霧面櫻桃紅",
-    "Image": "images/materials/37.png",
-    "Color": "#b01f45"
+    "number": 37,
+    "name": "霧面櫻桃紅",
+    "image": "images/materials/37.webp",
+    "color": "#b01f45"
   },
   {
-    "Number": 38,
-    "Name": "霧面薰衣草灰",
-    "Image": "images/materials/38.png",
-    "Color": "#8a82a9"
+    "number": 38,
+    "name": "霧面薰衣草灰",
+    "image": "images/materials/38.webp",
+    "color": "#8a82a9"
   },
   {
-    "Number": 39,
-    "Name": "霧面象牙白",
-    "Image": "images/materials/39.png",
-    "Color": "#f2ece3"
+    "number": 39,
+    "name": "霧面象牙白",
+    "image": "images/materials/39.webp",
+    "color": "#f2ece3"
   },
   {
-    "Number": 40,
-    "Name": "霧面深海藍",
-    "Image": "images/materials/40.png",
-    "Color": "#1d3c6d"
+    "number": 40,
+    "name": "霧面深海藍",
+    "image": "images/materials/40.webp",
+    "color": "#1d3c6d"
   },
   {
-    "Number": 41,
-    "Name": "霧面松石綠",
-    "Image": "images/materials/41.png",
-    "Color": "#177a68"
+    "number": 41,
+    "name": "霧面松石綠",
+    "image": "images/materials/41.webp",
+    "color": "#177a68"
   },
   {
-    "Number": 42,
-    "Name": "霧面砂岩黃",
-    "Image": "images/materials/42.png",
-    "Color": "#c09056"
+    "number": 42,
+    "name": "霧面砂岩黃",
+    "image": "images/materials/42.webp",
+    "color": "#c09056"
   },
   {
-    "Number": 43,
-    "Name": "霧面酒紅棕",
-    "Image": "images/materials/43.png",
-    "Color": "#62311f"
+    "number": 43,
+    "name": "霧面酒紅棕",
+    "image": "images/materials/43.webp",
+    "color": "#62311f"
   },
   {
-    "Number": 44,
-    "Name": "霧面石墨黑",
-    "Image": "images/materials/44.png",
-    "Color": "#292826"
+    "number": 44,
+    "name": "霧面石墨黑",
+    "image": "images/materials/44.webp",
+    "color": "#292826"
   },
   {
-    "Number": 45,
-    "Name": "霧面翡翠綠",
-    "Image": "images/materials/45.png",
-    "Color": "#2a9270"
+    "number": 45,
+    "name": "霧面翡翠綠",
+    "image": "images/materials/45.webp",
+    "color": "#2a9270"
   },
   {
-    "Number": 46,
-    "Name": "霧面胭脂粉",
-    "Image": "images/materials/46.png",
-    "Color": "#d58ca5"
+    "number": 46,
+    "name": "霧面胭脂粉",
+    "image": "images/materials/46.webp",
+    "color": "#d58ca5"
   },
   {
-    "Number": 47,
-    "Name": "霧面鋼藍色",
-    "Image": "images/materials/47.png",
-    "Color": "#5a6e89"
+    "number": 47,
+    "name": "霧面鋼藍色",
+    "image": "images/materials/47.webp",
+    "color": "#5a6e89"
   },
   {
-    "Number": 48,
-    "Name": "霧面煙霧灰",
-    "Image": "images/materials/48.png",
-    "Color": "#918c88"
+    "number": 48,
+    "name": "霧面煙霧灰",
+    "image": "images/materials/48.webp",
+    "color": "#918c88"
   },
   {
-    "Number": 49,
-    "Name": "絲紋深紅色",
-    "Image": "images/materials/49.png",
-    "Color": "#c7302b"
+    "number": 49,
+    "name": "絲紋深紅色",
+    "image": "images/materials/49.webp",
+    "color": "#c7302b"
   },
   {
-    "Number": 50,
-    "Name": "絲紋珍珠白",
-    "Image": "images/materials/50.png",
-    "Color": "#f8f7f2"
+    "number": 50,
+    "name": "絲紋珍珠白",
+    "image": "images/materials/50.webp",
+    "color": "#f8f7f2"
   },
   {
-    "Number": 51,
-    "Name": "絲紋霧黑色",
-    "Image": "images/materials/51.png",
-    "Color": "#231f20"
+    "number": 51,
+    "name": "絲紋霧黑色",
+    "image": "images/materials/51.webp",
+    "color": "#231f20"
   },
   {
-    "Number": 52,
-    "Name": "絲紋冷灰色",
-    "Image": "images/materials/52.png",
-    "Color": "#aeb2b3"
+    "number": 52,
+    "name": "絲紋冷灰色",
+    "image": "images/materials/52.webp",
+    "color": "#aeb2b3"
   },
   {
-    "Number": 53,
-    "Name": "絲紋海松綠",
-    "Image": "images/materials/53.png",
-    "Color": "#0f766e"
+    "number": 53,
+    "name": "絲紋海松綠",
+    "image": "images/materials/53.webp",
+    "color": "#0f766e"
   },
   {
-    "Number": 54,
-    "Name": "絲紋鈷藍色",
-    "Image": "images/materials/54.png",
-    "Color": "#1d4ed8"
+    "number": 54,
+    "name": "絲紋鈷藍色",
+    "image": "images/materials/54.webp",
+    "color": "#1d4ed8"
   },
   {
-    "Number": 55,
-    "Name": "絲紋螢光黃",
-    "Image": "images/materials/55.png",
-    "Color": "#d6ff2f"
+    "number": 55,
+    "name": "絲紋螢光黃",
+    "image": "images/materials/55.webp",
+    "color": "#d6ff2f"
   },
   {
-    "Number": 56,
-    "Name": "絲紋競速橘",
-    "Image": "images/materials/56.png",
-    "Color": "#f97316"
+    "number": 56,
+    "name": "絲紋競速橘",
+    "image": "images/materials/56.webp",
+    "color": "#f97316"
   },
   {
-    "Number": 57,
-    "Name": "絲紋紫羅蘭",
-    "Image": "images/materials/57.png",
-    "Color": "#7c3aed"
+    "number": 57,
+    "name": "絲紋紫羅蘭",
+    "image": "images/materials/57.webp",
+    "color": "#7c3aed"
   },
   {
-    "Number": 58,
-    "Name": "絲紋沙棕色",
-    "Image": "images/materials/58.png",
-    "Color": "#b4875f"
+    "number": 58,
+    "name": "絲紋沙棕色",
+    "image": "images/materials/58.webp",
+    "color": "#b4875f"
   },
   {
-    "Number": 59,
-    "Name": "絲紋碳纖黑",
-    "Image": "images/materials/59.png",
-    "Color": "#343434"
+    "number": 59,
+    "name": "絲紋碳纖黑",
+    "image": "images/materials/59.webp",
+    "color": "#343434"
   },
   {
-    "Number": 60,
-    "Name": "絲紋金屬金",
-    "Image": "images/materials/60.png",
-    "Color": "#c58c31"
+    "number": 60,
+    "name": "絲紋金屬金",
+    "image": "images/materials/60.webp",
+    "color": "#c58c31"
   },
   {
-    "Number": 61,
-    "Name": "絲紋櫻桃紅",
-    "Image": "images/materials/61.png",
-    "Color": "#b01f45"
+    "number": 61,
+    "name": "絲紋櫻桃紅",
+    "image": "images/materials/61.webp",
+    "color": "#b01f45"
   },
   {
-    "Number": 62,
-    "Name": "絲紋薰衣草灰",
-    "Image": "images/materials/62.png",
-    "Color": "#8a82a9"
+    "number": 62,
+    "name": "絲紋薰衣草灰",
+    "image": "images/materials/62.webp",
+    "color": "#8a82a9"
   },
   {
-    "Number": 63,
-    "Name": "絲紋象牙白",
-    "Image": "images/materials/63.png",
-    "Color": "#f2ece3"
+    "number": 63,
+    "name": "絲紋象牙白",
+    "image": "images/materials/63.webp",
+    "color": "#f2ece3"
   },
   {
-    "Number": 64,
-    "Name": "絲紋深海藍",
-    "Image": "images/materials/64.png",
-    "Color": "#1d3c6d"
+    "number": 64,
+    "name": "絲紋深海藍",
+    "image": "images/materials/64.webp",
+    "color": "#1d3c6d"
   },
   {
-    "Number": 65,
-    "Name": "絲紋松石綠",
-    "Image": "images/materials/65.png",
-    "Color": "#177a68"
+    "number": 65,
+    "name": "絲紋松石綠",
+    "image": "images/materials/65.webp",
+    "color": "#177a68"
   },
   {
-    "Number": 66,
-    "Name": "絲紋砂岩黃",
-    "Image": "images/materials/66.png",
-    "Color": "#c09056"
+    "number": 66,
+    "name": "絲紋砂岩黃",
+    "image": "images/materials/66.webp",
+    "color": "#c09056"
   },
   {
-    "Number": 67,
-    "Name": "絲紋酒紅棕",
-    "Image": "images/materials/67.png",
-    "Color": "#62311f"
+    "number": 67,
+    "name": "絲紋酒紅棕",
+    "image": "images/materials/67.webp",
+    "color": "#62311f"
   },
   {
-    "Number": 68,
-    "Name": "絲紋石墨黑",
-    "Image": "images/materials/68.png",
-    "Color": "#292826"
+    "number": 68,
+    "name": "絲紋石墨黑",
+    "image": "images/materials/68.webp",
+    "color": "#292826"
   },
   {
-    "Number": 69,
-    "Name": "絲紋翡翠綠",
-    "Image": "images/materials/69.png",
-    "Color": "#2a9270"
+    "number": 69,
+    "name": "絲紋翡翠綠",
+    "image": "images/materials/69.webp",
+    "color": "#2a9270"
   },
   {
-    "Number": 70,
-    "Name": "絲紋胭脂粉",
-    "Image": "images/materials/70.png",
-    "Color": "#d58ca5"
+    "number": 70,
+    "name": "絲紋胭脂粉",
+    "image": "images/materials/70.webp",
+    "color": "#d58ca5"
   },
   {
-    "Number": 71,
-    "Name": "絲紋鋼藍色",
-    "Image": "images/materials/71.png",
-    "Color": "#5a6e89"
+    "number": 71,
+    "name": "絲紋鋼藍色",
+    "image": "images/materials/71.webp",
+    "color": "#5a6e89"
   },
   {
-    "Number": 72,
-    "Name": "絲紋煙霧灰",
-    "Image": "images/materials/72.png",
-    "Color": "#918c88"
+    "number": 72,
+    "name": "絲紋煙霧灰",
+    "image": "images/materials/72.webp",
+    "color": "#918c88"
   },
   {
-    "Number": 73,
-    "Name": "仿碳纖紋深紅色",
-    "Image": "images/materials/73.png",
-    "Color": "#c7302b"
+    "number": 73,
+    "name": "仿碳纖紋深紅色",
+    "image": "images/materials/73.webp",
+    "color": "#c7302b"
   },
   {
-    "Number": 74,
-    "Name": "仿碳纖紋珍珠白",
-    "Image": "images/materials/74.png",
-    "Color": "#f8f7f2"
+    "number": 74,
+    "name": "仿碳纖紋珍珠白",
+    "image": "images/materials/74.webp",
+    "color": "#f8f7f2"
   },
   {
-    "Number": 75,
-    "Name": "仿碳纖紋霧黑色",
-    "Image": "images/materials/75.png",
-    "Color": "#231f20"
+    "number": 75,
+    "name": "仿碳纖紋霧黑色",
+    "image": "images/materials/75.webp",
+    "color": "#231f20"
   },
   {
-    "Number": 76,
-    "Name": "仿碳纖紋冷灰色",
-    "Image": "images/materials/76.png",
-    "Color": "#aeb2b3"
+    "number": 76,
+    "name": "仿碳纖紋冷灰色",
+    "image": "images/materials/76.webp",
+    "color": "#aeb2b3"
   },
   {
-    "Number": 77,
-    "Name": "仿碳纖紋海松綠",
-    "Image": "images/materials/77.png",
-    "Color": "#0f766e"
+    "number": 77,
+    "name": "仿碳纖紋海松綠",
+    "image": "images/materials/77.webp",
+    "color": "#0f766e"
   },
   {
-    "Number": 78,
-    "Name": "仿碳纖紋鈷藍色",
-    "Image": "images/materials/78.png",
-    "Color": "#1d4ed8"
+    "number": 78,
+    "name": "仿碳纖紋鈷藍色",
+    "image": "images/materials/78.webp",
+    "color": "#1d4ed8"
   },
   {
-    "Number": 79,
-    "Name": "仿碳纖紋螢光黃",
-    "Image": "images/materials/79.png",
-    "Color": "#d6ff2f"
+    "number": 79,
+    "name": "仿碳纖紋螢光黃",
+    "image": "images/materials/79.webp",
+    "color": "#d6ff2f"
   },
   {
-    "Number": 80,
-    "Name": "仿碳纖紋競速橘",
-    "Image": "images/materials/80.png",
-    "Color": "#f97316"
+    "number": 80,
+    "name": "仿碳纖紋競速橘",
+    "image": "images/materials/80.webp",
+    "color": "#f97316"
   },
   {
-    "Number": 81,
-    "Name": "仿碳纖紋紫羅蘭",
-    "Image": "images/materials/81.png",
-    "Color": "#7c3aed"
+    "number": 81,
+    "name": "仿碳纖紋紫羅蘭",
+    "image": "images/materials/81.webp",
+    "color": "#7c3aed"
   },
   {
-    "Number": 82,
-    "Name": "仿碳纖紋沙棕色",
-    "Image": "images/materials/82.png",
-    "Color": "#b4875f"
+    "number": 82,
+    "name": "仿碳纖紋沙棕色",
+    "image": "images/materials/82.webp",
+    "color": "#b4875f"
   },
   {
-    "Number": 83,
-    "Name": "仿碳纖紋碳纖黑",
-    "Image": "images/materials/83.png",
-    "Color": "#343434"
+    "number": 83,
+    "name": "仿碳纖紋碳纖黑",
+    "image": "images/materials/83.webp",
+    "color": "#343434"
   },
   {
-    "Number": 84,
-    "Name": "仿碳纖紋金屬金",
-    "Image": "images/materials/84.png",
-    "Color": "#c58c31"
+    "number": 84,
+    "name": "仿碳纖紋金屬金",
+    "image": "images/materials/84.webp",
+    "color": "#c58c31"
   },
   {
-    "Number": 85,
-    "Name": "仿碳纖紋櫻桃紅",
-    "Image": "images/materials/85.png",
-    "Color": "#b01f45"
+    "number": 85,
+    "name": "仿碳纖紋櫻桃紅",
+    "image": "images/materials/85.webp",
+    "color": "#b01f45"
   },
   {
-    "Number": 86,
-    "Name": "仿碳纖紋薰衣草灰",
-    "Image": "images/materials/86.png",
-    "Color": "#8a82a9"
+    "number": 86,
+    "name": "仿碳纖紋薰衣草灰",
+    "image": "images/materials/86.webp",
+    "color": "#8a82a9"
   },
   {
-    "Number": 87,
-    "Name": "仿碳纖紋象牙白",
-    "Image": "images/materials/87.png",
-    "Color": "#f2ece3"
+    "number": 87,
+    "name": "仿碳纖紋象牙白",
+    "image": "images/materials/87.webp",
+    "color": "#f2ece3"
   },
   {
-    "Number": 88,
-    "Name": "仿碳纖紋深海藍",
-    "Image": "images/materials/88.png",
-    "Color": "#1d3c6d"
+    "number": 88,
+    "name": "仿碳纖紋深海藍",
+    "image": "images/materials/88.webp",
+    "color": "#1d3c6d"
   },
   {
-    "Number": 89,
-    "Name": "仿碳纖紋松石綠",
-    "Image": "images/materials/89.png",
-    "Color": "#177a68"
+    "number": 89,
+    "name": "仿碳纖紋松石綠",
+    "image": "images/materials/89.webp",
+    "color": "#177a68"
   },
   {
-    "Number": 90,
-    "Name": "仿碳纖紋砂岩黃",
-    "Image": "images/materials/90.png",
-    "Color": "#c09056"
+    "number": 90,
+    "name": "仿碳纖紋砂岩黃",
+    "image": "images/materials/90.webp",
+    "color": "#c09056"
   },
   {
-    "Number": 91,
-    "Name": "仿碳纖紋酒紅棕",
-    "Image": "images/materials/91.png",
-    "Color": "#62311f"
+    "number": 91,
+    "name": "仿碳纖紋酒紅棕",
+    "image": "images/materials/91.webp",
+    "color": "#62311f"
   },
   {
-    "Number": 92,
-    "Name": "仿碳纖紋石墨黑",
-    "Image": "images/materials/92.png",
-    "Color": "#292826"
+    "number": 92,
+    "name": "仿碳纖紋石墨黑",
+    "image": "images/materials/92.webp",
+    "color": "#292826"
   },
   {
-    "Number": 93,
-    "Name": "仿碳纖紋翡翠綠",
-    "Image": "images/materials/93.png",
-    "Color": "#2a9270"
+    "number": 93,
+    "name": "仿碳纖紋翡翠綠",
+    "image": "images/materials/93.webp",
+    "color": "#2a9270"
   },
   {
-    "Number": 94,
-    "Name": "仿碳纖紋胭脂粉",
-    "Image": "images/materials/94.png",
-    "Color": "#d58ca5"
+    "number": 94,
+    "name": "仿碳纖紋胭脂粉",
+    "image": "images/materials/94.webp",
+    "color": "#d58ca5"
   },
   {
-    "Number": 95,
-    "Name": "仿碳纖紋鋼藍色",
-    "Image": "images/materials/95.png",
-    "Color": "#5a6e89"
+    "number": 95,
+    "name": "仿碳纖紋鋼藍色",
+    "image": "images/materials/95.webp",
+    "color": "#5a6e89"
   },
   {
-    "Number": 96,
-    "Name": "仿碳纖紋煙霧灰",
-    "Image": "images/materials/96.png",
-    "Color": "#918c88"
+    "number": 96,
+    "name": "仿碳纖紋煙霧灰",
+    "image": "images/materials/96.webp",
+    "color": "#918c88"
   }
 ]
