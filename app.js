@@ -156,7 +156,7 @@ function normalizePalette(materials) {
   return (Array.isArray(materials) ? materials : [])
     .map((item) => {
       const number = Number(item.number);
-      if (!Number.isInteger(number) || number <= 0) {
+      if (!Number.isInteger(number) || number < 0) {
         return null;
       }
       const color = String(item.color || "#f8f7f2").trim();
@@ -433,7 +433,7 @@ function syncControlsFromState() {
 
 function setZoneMaterialFromUrl(zone, value) {
   const code = parseZoneSelection(value);
-  const item = code ? paletteItemForCode(code) : null;
+  const item = Number.isFinite(code) ? paletteItemForCode(code) : null;
   if (item) {
     applyPaletteItemToZone(zone, item);
     return;
@@ -495,13 +495,13 @@ function zoneDisplayCode(data) {
 }
 
 function materialNumber(value) {
-  const number = Number.parseInt(String(value || "").replace(/^0+/, ""), 10);
-  return Number.isFinite(number) && number > 0 ? number : NaN;
+  const number = Number.parseInt(String(value ?? "").replace(/^0+/, "0"), 10);
+  return Number.isFinite(number) && number >= 0 ? number : NaN;
 }
 
 function materialCode(value) {
   const number = Number.isInteger(value) ? value : materialNumber(value);
-  return Number.isFinite(number) && number > 0 ? String(number).padStart(2, "0") : "";
+  return Number.isFinite(number) && number >= 0 ? String(number).padStart(2, "0") : "";
 }
 
 function parseZoneSelection(value) {
