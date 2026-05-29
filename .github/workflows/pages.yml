@@ -30,6 +30,7 @@ jobs:
           mkdir -p _site
           cp index.html styles.css app.js _site/
           cp -R images _site/images
+          rm -rf "_site/images/實際色卡"
           touch _site/.nojekyll
 
       - name: Setup Pages
