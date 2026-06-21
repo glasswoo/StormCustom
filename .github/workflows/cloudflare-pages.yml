@@ -1,0 +1,30 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build _site (mirror pages.yml, exclude colour-card scans)
+        run: |
+          rm -rf _site
+          mkdir -p _site
+          cp index.html styles.css app.js _site/
+          cp -R images _site/images
+          rm -rf "_site/images/實際色卡"
+          touch _site/.nojekyll
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: b3319d3ef0aca7df085274d2f3f19f3e
+          command: pages deploy _site --project-name=stormcustom --branch=main

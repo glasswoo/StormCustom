@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 純靜態網站，沒有 build / lint / test 流程。
 
 - 本機預覽：`python3 -m http.server 5173`，開 `http://127.0.0.1:5173/`
-- 部署：push 到 `main` 後由 [.github/workflows/pages.yml](.github/workflows/pages.yml) 觸發 GitHub Pages 部署；artifact 只打包 `index.html` / `styles.css` / `app.js` / `images/` / `.nojekyll`，README、workflow、`node_modules/` 不會上線。
+- 部署：**正式站台是 Cloudflare Pages**（<https://stormcustom.pages.dev/>，專案 `stormcustom`、分支 `main`、account `b3319d3ef0aca7df085274d2f3f19f3e`）。push 到 `main` 由 [.github/workflows/cloudflare-pages.yml](.github/workflows/cloudflare-pages.yml) 自動部署（wrangler 把 `_site` 推上去，需 repo secret `CLOUDFLARE_API_TOKEN`，權限 Account→Cloudflare Pages→Edit）。手動部署：本機建 `_site` 後 `npx wrangler@3 pages deploy _site --project-name=stormcustom --branch=main`（Node 18 要固定 `wrangler@3`，v4 需要更新的 Node）。`_site` 打包規則同 [.github/workflows/pages.yml](.github/workflows/pages.yml)：只含 `index.html` / `styles.css` / `app.js` / `images/` / `.nojekyll`，並 `rm -rf "_site/images/實際色卡"`；README、workflow、`node_modules/` 不會上線。GitHub Pages（pages.yml）保留為備援；**Gitee Pages 已對個人用戶停服，不可用**。
 - `node_modules/` 只有 `sharp`，用來離線產生 / 處理 `images/generated-masks/` 與 `images/materials/*.webp`，不是 runtime 相依，runtime 全靠 CDN（three.js、jsPDF、lucide）。
 
 ## Architecture
