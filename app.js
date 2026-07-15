@@ -4,7 +4,17 @@ const ENABLE_3D_VIEW = false;
 const SHOE_PREVIEW_VIEWBOXES = {
   speed: "120 610 1115 760",
   slalom: "120 610 1115 760",
+  ice: "115 620 1115 760",
 };
+
+const MODEL_TITLES = {
+  speed: "競速",
+  slalom: "速樁",
+  ice: "冰刀",
+};
+
+// 孔距固定（表單鎖定、選色單上已預印）的鞋款
+const FIXED_MOUNT_MODELS = ["slalom", "ice"];
 const MATERIALS_JSON_PATH = "images/materials/colors.json";
 
 const zoneLabels = {
@@ -17,6 +27,11 @@ const zoneLabels = {
     A: "鞋身 / 固定帶",
     B: "內襯 / 鞋頭",
     C: "備用區",
+  },
+  ice: {
+    A: "主鞋面 / 鞋身",
+    B: "固定帶 / 後跟",
+    C: "鞋頭火焰區",
   },
 };
 
@@ -175,7 +190,7 @@ function applyInitialUrlOverrides() {
 
   const params = new URLSearchParams(window.location.search);
   const model = params.get("model");
-  if (model === "speed" || model === "slalom") {
+  if (model && model in zoneLabels) {
     state.model = model;
   }
 
@@ -205,7 +220,7 @@ function applyInitialUrlOverrides() {
 }
 
 function parseMountValue(model, value) {
-  if (model === "slalom") {
+  if (FIXED_MOUNT_MODELS.includes(model)) {
     return modelDefaultMount(model);
   }
 
@@ -232,7 +247,7 @@ function currentDayString() {
 }
 
 function modelDefaultMount(model) {
-  return model === "slalom" ? "165" : "";
+  return FIXED_MOUNT_MODELS.includes(model) ? "165" : "";
 }
 
 function isDefaultFieldForShare(field, value, model) {
@@ -347,11 +362,11 @@ function updateMountFieldState() {
     return;
   }
 
-  if (state.model === "slalom") {
-    state.fields.mount = modelDefaultMount("slalom");
+  if (FIXED_MOUNT_MODELS.includes(state.model)) {
+    state.fields.mount = modelDefaultMount(state.model);
     mountField.value = state.fields.mount;
     mountField.disabled = true;
-    mountField.setAttribute("title", "速樁鞋孔距為固定設定");
+    mountField.setAttribute("title", `${MODEL_TITLES[state.model]}鞋孔距為固定設定`);
     return;
   }
 
@@ -361,13 +376,14 @@ function updateMountFieldState() {
 }
 
 function activeZones() {
-  return state.model === "speed" ? ["A", "B", "C"] : ["A", "B"];
+  return state.model === "slalom" ? ["A", "B"] : ["A", "B", "C"];
 }
 
 function renderZoneTabs() {
   const visibleZones = activeZones();
-  els.zoneHint.textContent =
-    state.model === "speed" ? "競速鞋使用 A / B / C 三區" : "速樁鞋使用 A / B 兩區";
+  els.zoneHint.textContent = `${MODEL_TITLES[state.model]}鞋使用 ${visibleZones.join(" / ")} ${
+    visibleZones.length === 3 ? "三區" : "兩區"
+  }`;
 
   els.zoneTabs.innerHTML = ["A", "B", "C"]
     .map((zone) => {
@@ -1254,7 +1270,7 @@ function renderSheet() {
 }
 
 function buildSheetSvg() {
-  const modelTitle = state.model === "speed" ? "競速" : "速樁";
+  const modelTitle = MODEL_TITLES[state.model];
   return buildSelectionSheetSvg({
     viewBox: `0 0 ${SHEET_WIDTH} ${SHEET_HEIGHT}`,
     ariaLabel: `STORM SKATES ${modelTitle}客製選色單`,
@@ -1266,7 +1282,7 @@ function render2dPreview() {
   if (!els.render2dPreview) {
     return;
   }
-  const modelTitle = state.model === "speed" ? "競速" : "速樁";
+  const modelTitle = MODEL_TITLES[state.model];
   const viewBox = SHOE_PREVIEW_VIEWBOXES[state.model];
   els.render2dPreview.innerHTML = `
     ${buildSelectionSheetSvg({
@@ -1293,34 +1309,30 @@ function buildSelectionSheetSvg({ viewBox, ariaLabel, includeValues }) {
 }
 
 function sheetImageHref() {
-  const path =
-    state.model === "speed"
-      ? "images/競速鞋參考圖片/競速鞋選色單.jpg"
-      : "images/速樁鞋參考圖片/速樁鞋選色單.jpg";
-  return new URL(path, window.location.href).href;
+  const paths = {
+    speed: "images/競速鞋參考圖片/競速鞋選色單.jpg",
+    slalom: "images/速樁鞋參考圖片/速樁鞋選色單.jpg",
+    ice: "images/短道鞋參考圖片/短道鞋選色單.jpg",
+  };
+  return new URL(paths[state.model], window.location.href).href;
 }
 
 function sheetColorUnderlays() {
-  const boot = state.model === "speed" ? speedSheetUnderlays() : slalomSheetUnderlays();
+  const boot =
+    state.model === "slalom"
+      ? slalomSheetUnderlays()
+      : `
+        <g id="${state.model}-zone-underlays">
+          ${sheetMaskUnderlay(state.model, "A")}
+          ${sheetMaskUnderlay(state.model, "C")}
+          ${sheetMaskUnderlay(state.model, "B")}
+        </g>
+      `;
   return `
     <g id="color-underlays">
       ${boot}
     </g>
   `;
-}
-
-function speedSheetUnderlays() {
-  return `
-    <g id="speed-zone-underlays">
-      ${speedMaskUnderlay("A")}
-      ${speedMaskUnderlay("C")}
-      ${speedMaskUnderlay("B")}
-    </g>
-  `;
-}
-
-function speedMaskUnderlay(zone) {
-  return sheetMaskUnderlay("speed", zone);
 }
 
 function sheetMaskUnderlay(model, zone) {
@@ -1394,40 +1406,72 @@ function slalomFixedRimUnderlay() {
   return `<rect x="0" y="0" width="${SHEET_WIDTH}" height="${SHEET_HEIGHT}" fill="#302c2b" mask="url(#slalom-fixed-rim-mask)"/>`;
 }
 
+// 各鞋款選色單 JPG 上的表單欄位座標（SHEET 2048x1448 座標系，換參考 JPG 要重對）
+const SHEET_FIELD_LAYOUTS = {
+  speed: {
+    date: [314, 308, 13],
+    team: [780, 308, 13],
+    athlete: [1208, 308, 14],
+    orderNo: [1650, 308, 9],
+    footLength: [314, 432, 8],
+    allowance: [782, 432, 8],
+    embroidery: [350, 558, 16],
+    notes: [900, 558, 16],
+  },
+  ice: {
+    date: [330, 308, 13],
+    team: [795, 308, 13],
+    athlete: [1222, 308, 14],
+    orderNo: [1665, 308, 9],
+    footLength: [330, 431, 8],
+    allowance: [780, 431, 8],
+    embroidery: [365, 551, 16],
+    notes: [912, 551, 16],
+  },
+};
+SHEET_FIELD_LAYOUTS.slalom = SHEET_FIELD_LAYOUTS.speed;
+
 function sheetValueOverlays() {
+  const layout = SHEET_FIELD_LAYOUTS[state.model];
+  const fields = Object.entries(layout)
+    .map(([field, [x, y, maxLength]]) => sheetText(state.fields[field], x, y, 38, maxLength))
+    .join("");
   return `
     <g id="form-values" font-family="Arial, 'Noto Sans TC', sans-serif" fill="#241715">
-      ${sheetText(state.fields.date, 314, 308, 38, 13)}
-      ${sheetText(state.fields.team, 780, 308, 38, 13)}
-      ${sheetText(state.fields.athlete, 1208, 308, 38, 14)}
-      ${sheetText(state.fields.orderNo, 1650, 308, 38, 9)}
-      ${sheetText(state.fields.footLength, 314, 432, 38, 8)}
-      ${sheetText(state.fields.allowance, 782, 432, 38, 8)}
+      ${fields}
       ${mountTextOverlay()}
-      ${sheetText(state.fields.embroidery, 350, 558, 38, 16)}
-      ${sheetText(state.fields.notes, 900, 558, 38, 16)}
       ${materialValueOverlays()}
     </g>
   `;
 }
 
 function mountTextOverlay() {
-  if (!state.fields.mount || state.model === "slalom") {
+  // 孔距固定的鞋款（slalom / ice）表單上已預印，不再疊字
+  if (!state.fields.mount || FIXED_MOUNT_MODELS.includes(state.model)) {
     return "";
   }
   return sheetText(state.fields.mount, 1225, 432, 38, 12);
 }
 
+// 料號/皮色表格每列中心 y 與欄位 x（依各參考 JPG 手動對位）
+function materialTableLayout() {
+  if (state.model === "ice") {
+    return { rowCenters: [787, 949, 1101], codeX: 1290, nameCenterX: 1711 };
+  }
+  if (state.model === "speed") {
+    return { rowCenters: [811, 1001, 1191], codeX: 1414, nameCenterX: 1750 };
+  }
+  return { rowCenters: [826, 1026], codeX: 1350, nameCenterX: 1750 };
+}
+
 function materialValueOverlays() {
   const zones = activeZones();
-  const table = state.model === "speed"
-    ? { y: 716, row: 190, codeX: 1414, nameCenterX: 1750 }
-    : { y: 726, row: 200, codeX: 1350, nameCenterX: 1750 };
+  const table = materialTableLayout();
 
   return zones
     .map((zone, index) => {
       const data = state.zones[zone];
-      const y = table.y + index * table.row + table.row / 2 + 12;
+      const y = table.rowCenters[index] + 12;
       const material = zoneMaterialData(data);
       const name = fitText(material ? material.name : data.name, 8);
       const nameMarkup = name
@@ -1784,7 +1828,7 @@ function downloadDataUrl(dataUrl, filename) {
 }
 
 function fileBaseName() {
-  const modelName = state.model === "speed" ? "競速鞋" : "速樁鞋";
+  const modelName = `${MODEL_TITLES[state.model]}鞋`;
   const athlete = state.fields.athlete || state.fields.orderNo || "未命名";
   return `STORM_${modelName}_${athlete}`.replace(/[\\/:*?"<>|]/g, "-");
 }
